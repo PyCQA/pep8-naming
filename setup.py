@@ -36,6 +36,7 @@ setup(
     entry_points={
         'flint.extension': [
             'N80 = flint_naming:NamingChecker',
+            'N81 = flint_naming:NamingChecker',
         ],
     },
     classifiers=[
