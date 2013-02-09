@@ -26,7 +26,7 @@ setup(
     keywords='flint pep8',
     author='Florent Xicluna',
     author_email='florent.xicluna@gmail.com',
-    url='https://github.com/florentx/flint_naming',
+    url='https://github.com/florentx/flint-naming',
     license='Expat license',
     py_modules=['flint_naming'],
     zip_safe=False,
