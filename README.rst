@@ -1,7 +1,8 @@
-flint_naming - PEP-8 Naming Conventions
+flint-naming - PEP-8 Naming Conventions
 =======================================
 
 Check the PEP-8 naming conventions.
+
 This module provides a plugin for ``flint``, the Python code checker.
 
 Installation
