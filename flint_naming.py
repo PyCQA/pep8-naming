@@ -1,36 +1,13 @@
+# -*- coding: utf-8 -*-
 """Checker of PEP-8 Naming Conventions."""
 import re
 import sys
 from collections import deque
-try:
-    import ast
-    ast_iter_nodes = ast.iter_child_nodes
-except ImportError:   # Python 2.5
-    import _ast as ast
 
-    def _ast_compat(node):
-        if isinstance(node, ast.ClassDef):
-            node.decorator_list = []
-        elif isinstance(node, ast.FunctionDef):
-            node.decorator_list = node.decorators
-        elif node._fields is None:
-            node._fields = ()
-        return node
-
-    def ast_iter_nodes(node, _ast_compat=_ast_compat):
-        for name in _ast_compat(node)._fields:
-            try:
-                field = getattr(node, name)
-            except AttributeError:
-                continue
-            if isinstance(field, ast.AST):
-                yield _ast_compat(field)
-            elif isinstance(field, list):
-                for item in field:
-                    if isinstance(item, ast.AST):
-                        yield _ast_compat(item)
+from flint.util import ast, iter_child_nodes
 
 __version__ = '0.0'
+
 LOWERCASE_REGEX = re.compile(r'[_a-z][_a-z0-9]*$')
 UPPERCASE_REGEX = re.compile(r'[_A-Z][_A-Z0-9]*$')
 MIXEDCASE_REGEX = re.compile(r'_?[A-Z][a-zA-Z0-9]*$')
@@ -91,7 +68,7 @@ class NamingChecker(object):
         for error in self.visit_node(node):
             yield error
         self.parents.append(node)
-        for child in ast_iter_nodes(node):
+        for child in iter_child_nodes(node):
             for error in self.visit_tree(child):
                 yield error
         self.parents.pop()
@@ -114,7 +91,7 @@ class NamingChecker(object):
         # tries to find all 'old style decorators' like
         # m = staticmethod(m)
         late_decoration = {}
-        for node in ast_iter_nodes(cls_node):
+        for node in iter_child_nodes(cls_node):
             if not (isinstance(node, ast.Assign) and
                     isinstance(node.value, ast.Call) and
                     isinstance(node.value.func, ast.Name)):
@@ -126,7 +103,7 @@ class NamingChecker(object):
                     late_decoration[meth.id] = func_name
 
         # iterate over all functions and tag them
-        for node in ast_iter_nodes(cls_node):
+        for node in iter_child_nodes(cls_node):
             if not isinstance(node, ast.FunctionDef):
                 continue
             node.function_type = 'method'
@@ -141,14 +118,14 @@ class NamingChecker(object):
 
     def find_global_defs(self, func_def_node):
         global_names = set()
-        nodes_to_check = deque(ast_iter_nodes(func_def_node))
+        nodes_to_check = deque(iter_child_nodes(func_def_node))
         while nodes_to_check:
             node = nodes_to_check.pop()
             if isinstance(node, ast.Global):
                 global_names.update(node.names)
 
             if not isinstance(node, (ast.FunctionDef, ast.ClassDef)):
-                nodes_to_check.extend(ast_iter_nodes(node))
+                nodes_to_check.extend(iter_child_nodes(node))
         func_def_node.global_names = global_names
 
 

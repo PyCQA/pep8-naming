@@ -32,6 +32,7 @@ setup(
     zip_safe=False,
     install_requires=[
         'setuptools',
+        'flint',
     ],
     entry_points={
         'flint.extension': [
