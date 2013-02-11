@@ -6,7 +6,7 @@ from collections import deque
 
 from flint.util import ast, iter_child_nodes
 
-__version__ = '0.0'
+__version__ = '0.1'
 
 LOWERCASE_REGEX = re.compile(r'[_a-z][_a-z0-9]*$')
 UPPERCASE_REGEX = re.compile(r'[_A-Z][_A-Z0-9]*$')

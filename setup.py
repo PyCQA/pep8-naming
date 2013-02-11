@@ -26,7 +26,7 @@ setup(
     keywords='flint pep8',
     author='Florent Xicluna',
     author_email='florent.xicluna@gmail.com',
-    url='https://github.com/florentx/flint-naming',
+    url='https://github.com/flintwork/flint-naming',
     license='Expat license',
     py_modules=['flint_naming'],
     zip_safe=False,
@@ -41,7 +41,7 @@ setup(
         ],
     },
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 3 - Alpha',
         'Environment :: Console',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',

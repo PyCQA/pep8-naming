@@ -58,6 +58,6 @@ These error codes are emitted:
 Changes
 -------
 
-0.1 - 2013-02-xx
+0.1 - 2013-02-11
 ````````````````
 * First release
