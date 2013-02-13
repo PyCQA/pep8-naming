@@ -6,7 +6,7 @@ from collections import deque
 
 from flint.util import ast, iter_child_nodes
 
-__version__ = '0.1'
+__version__ = '0.2a0'
 
 LOWERCASE_REGEX = re.compile(r'[_a-z][_a-z0-9]*$')
 UPPERCASE_REGEX = re.compile(r'[_A-Z][_A-Z0-9]*$')
@@ -14,15 +14,18 @@ MIXEDCASE_REGEX = re.compile(r'_?[A-Z][a-zA-Z0-9]*$')
 
 
 if sys.version_info[0] < 3:
-    def get_arg_names(node):
+    def _unpack_args(args):
         ret = []
-        for arg in node.args.args:
+        for arg in args:
             if isinstance(arg, ast.Tuple):
-                for t_arg in arg.elts:
-                    ret.append(t_arg.id)
+                # ret.extend(arg.id for arg in arg.elts)
+                ret.extend(_unpack_args(arg.elts))
             else:
                 ret.append(arg.id)
         return ret
+
+    def get_arg_names(node):
+        return _unpack_args(node.args.args)
 else:
     def get_arg_names(node):
         pos_args = [arg.arg for arg in node.args.args]

@@ -58,6 +58,11 @@ These error codes are emitted:
 Changes
 -------
 
+0.2 - unreleased
+````````````````
+* Fix a crash when function argument is a tuple of tuples.
+
+
 0.1 - 2013-02-11
 ````````````````
 * First release
