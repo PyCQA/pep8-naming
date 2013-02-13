@@ -18,7 +18,6 @@ if sys.version_info[0] < 3:
         ret = []
         for arg in args:
             if isinstance(arg, ast.Tuple):
-                # ret.extend(arg.id for arg in arg.elts)
                 ret.extend(_unpack_args(arg.elts))
             else:
                 ret.append(arg.id)
