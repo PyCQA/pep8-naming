@@ -18,8 +18,8 @@ You can install, upgrade, uninstall ``pep8-naming`` with these commands::
   $ pip uninstall pep8-naming
 
 
-Plugin for Fake8
-----------------
+Plugin for Flake8
+-----------------
 
 .. warning::
    This feature requires ``flake8`` version 2.0 which is not released at this time.
@@ -27,7 +27,7 @@ Plugin for Fake8
 When both ``flake8`` and ``pep8-naming`` are installed, the plugin is
 available in ``flake8``::
 
-  $ fake8 --version
+  $ flake8 --version
   2.0 (pep8: 1.4.3, pyflakes: 0.6.1, naming: 0.2)
 
 By default the plugin is enabled.
