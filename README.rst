@@ -63,7 +63,7 @@ These error codes are emitted:
 Changes
 -------
 
-0.2 - unreleased
+0.2 - 2013-02-22
 ````````````````
 * Rename project ``flint-naming`` to ``pep8-naming``
 
