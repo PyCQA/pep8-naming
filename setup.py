@@ -32,7 +32,6 @@ setup(
     zip_safe=False,
     install_requires=[
         'setuptools',
-        'flake8',
     ],
     entry_points={
         'flake8.extension': [

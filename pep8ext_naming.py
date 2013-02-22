@@ -4,9 +4,13 @@ import re
 import sys
 from collections import deque
 
-from flake8.util import ast, iter_child_nodes
+try:
+    import ast
+    from ast import iter_child_nodes
+except ImportError:
+    from flake8.util import ast, iter_child_nodes
 
-__version__ = '0.2'
+__version__ = '0.2.1'
 
 LOWERCASE_REGEX = re.compile(r'[_a-z][_a-z0-9]*$')
 UPPERCASE_REGEX = re.compile(r'[_A-Z][_A-Z0-9]*$')

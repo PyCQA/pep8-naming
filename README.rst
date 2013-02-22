@@ -63,11 +63,16 @@ These error codes are emitted:
 Changes
 -------
 
+0.2.1 - 2013-02-22
+``````````````````
+* Do not require ``flake8``
+
+
 0.2 - 2013-02-22
 ````````````````
 * Rename project ``flint-naming`` to ``pep8-naming``
 
-* Fix a crash when function argument is a tuple of tuples.
+* Fix a crash when function argument is a tuple of tuples
 
 
 0.1 - 2013-02-11
