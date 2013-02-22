@@ -3,27 +3,32 @@ PEP-8 Naming Conventions
 
 Check the PEP-8 naming conventions.
 
-This module provides a plugin for ``flint``, the Python code checker.
+This module provides a plugin for ``flake8``, the Python code checker.
+
+(It replaces the plugin ``flint-naming`` for the ``flint`` checker.)
 
 
 Installation
 ------------
 
-You can install, upgrade, uninstall ``flint-naming`` with these commands::
+You can install, upgrade, uninstall ``pep8-naming`` with these commands::
 
-  $ pip install flint-naming
-  $ pip install --upgrade flint-naming
-  $ pip uninstall flint-naming
+  $ pip install pep8-naming
+  $ pip install --upgrade pep8-naming
+  $ pip uninstall pep8-naming
 
 
-Plugin for Flint
+Plugin for Fake8
 ----------------
 
-When both ``flint`` and ``flint-naming`` are installed, the plugin is
-available in ``flint``::
+.. warning::
+   This feature requires ``flake8`` version 2.0 which is not released at this time.
 
-  $ flint --version
-  0.1 (pep8: 1.4.2, pyflakes: 0.6.1, naming: 0.1)
+When both ``flake8`` and ``pep8-naming`` are installed, the plugin is
+available in ``flake8``::
+
+  $ fake8 --version
+  2.0 (pep8: 1.4.3, pyflakes: 0.6.1, naming: 0.2)
 
 By default the plugin is enabled.
 
@@ -60,6 +65,8 @@ Changes
 
 0.2 - unreleased
 ````````````````
+* Rename project ``flint-naming`` to ``pep8-naming``
+
 * Fix a crash when function argument is a tuple of tuples.
 
 

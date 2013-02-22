@@ -4,7 +4,7 @@ import re
 import sys
 from collections import deque
 
-from flint.util import ast, iter_child_nodes
+from flake8.util import ast, iter_child_nodes
 
 __version__ = '0.2a0'
 
