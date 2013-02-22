@@ -3,7 +3,7 @@ from __future__ import with_statement
 from setuptools import setup
 
 
-def get_version(fname='flint_naming.py'):
+def get_version(fname='pep8ext_naming.py'):
     with open(fname) as f:
         for line in f:
             if line.startswith('__version__'):
@@ -19,25 +19,30 @@ def get_long_description():
 
 
 setup(
-    name='flint-naming',
+    name='pep8-naming',
     version=get_version(),
-    description="Check PEP-8 naming conventions, plugin for flint",
+    description="Check PEP-8 naming conventions, plugin for flake8",
     long_description=get_long_description(),
-    keywords='flint pep8',
+    keywords='flake8 pep8 naming',
     author='Florent Xicluna',
     author_email='florent.xicluna@gmail.com',
-    url='https://github.com/flintwork/flint-naming',
+    url='https://github.com/flintwork/pep8-naming',
     license='Expat license',
-    py_modules=['flint_naming'],
+    py_modules=['pep8ext_naming'],
     zip_safe=False,
     install_requires=[
         'setuptools',
-        'flint',
+        'flake8',
     ],
     entry_points={
+        'flake8.extension': [
+            'N80 = pep8ext_naming:NamingChecker',
+            'N81 = pep8ext_naming:NamingChecker',
+        ],
+        # Backward compatibility for Flint (now merged into Flake8)
         'flint.extension': [
-            'N80 = flint_naming:NamingChecker',
-            'N81 = flint_naming:NamingChecker',
+            'N80 = pep8ext_naming:NamingChecker',
+            'N81 = pep8ext_naming:NamingChecker',
         ],
     },
     classifiers=[
