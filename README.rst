@@ -21,9 +21,6 @@ You can install, upgrade, uninstall ``pep8-naming`` with these commands::
 Plugin for Flake8
 -----------------
 
-.. warning::
-   This feature requires ``flake8`` version 2.0 which is not released at this time.
-
 When both ``flake8`` and ``pep8-naming`` are installed, the plugin is
 available in ``flake8``::
 
