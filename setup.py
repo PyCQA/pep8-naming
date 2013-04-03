@@ -30,9 +30,6 @@ setup(
     license='Expat license',
     py_modules=['pep8ext_naming'],
     zip_safe=False,
-    install_requires=[
-        'setuptools',
-    ],
     entry_points={
         'flake8.extension': [
             'N80 = pep8ext_naming:NamingChecker',

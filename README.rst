@@ -60,6 +60,13 @@ These error codes are emitted:
 Changes
 -------
 
+0.x - unreleased
+````````````````
+
+* Do not require ``setuptools`` in setup.py.  It works around an issue
+  with ``pip`` and Python 3.
+
+
 0.2.1 - 2013-02-22
 ``````````````````
 * Do not require ``flake8``
