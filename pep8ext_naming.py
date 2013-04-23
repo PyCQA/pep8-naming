@@ -112,7 +112,11 @@ class NamingChecker(object):
         for node in iter_child_nodes(cls_node):
             if not isinstance(node, ast.FunctionDef):
                 continue
+
             node.function_type = 'method'
+            if node.name == '__new__':
+                node.function_type = 'classmethod'
+
             if node.name in late_decoration:
                 node.function_type = late_decoration[node.name]
             elif node.decorator_list:

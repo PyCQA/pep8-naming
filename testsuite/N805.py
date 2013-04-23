@@ -5,3 +5,12 @@ class Foo(object):
 
     def bad(ads, self):
         pass
+#: Okay
+class Foo(object):
+    def __new__(cls):
+        return object.__new__(Foo)
+#: Okay
+class Foo(object):
+    @classmethod
+    def __prepare__(cls):
+        pass
