@@ -1,6 +1,15 @@
 PEP-8 Naming Conventions
 ========================
 
+.. image:: https://badge.fury.io/py/pep8-naming.png
+    :target: http://badge.fury.io/py/pep8-naming
+    
+.. image:: https://travis-ci.org/flintwork/pep8-naming.png?branch=master
+        :target: https://travis-ci.org/flintwork/pep8-naming
+
+.. image:: https://pypip.in/d/pep8-naming/badge.png
+        :target: https://crate.io/packages/pep8-naming?version=latest
+
 Check the PEP-8 naming conventions.
 
 This module provides a plugin for ``flake8``, the Python code checker.
