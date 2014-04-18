@@ -11,6 +11,7 @@ IS_PY2_TEST = re.compile("^#\s*python2\s*only")
 
 
 def main():
+    print('Running pep8-naming tests')
     test_count = 0
     errors = 0
     for filename in os.listdir('testsuite'):

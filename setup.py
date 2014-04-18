@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import with_statement
 from setuptools import setup
+from setuptools.command.test import test as TestCommand
 
 
 def get_version(fname='pep8ext_naming.py'):
@@ -16,6 +17,19 @@ def get_long_description():
         with open(fname) as f:
             descr.append(f.read())
     return '\n\n'.join(descr)
+
+
+class RunTests(TestCommand):
+    def finalize_options(self):
+        TestCommand.finalize_options(self)
+        self.test_args = []
+        self.test_suite = True
+
+    def run_tests(self):
+        import run_tests
+        import sys
+        errno = run_tests.main()
+        sys.exit(errno)
 
 
 setup(
@@ -53,4 +67,5 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: Software Development :: Quality Assurance',
     ],
+    cmdclass={'test': RunTests},
 )
