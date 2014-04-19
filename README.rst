@@ -1,6 +1,15 @@
 PEP-8 Naming Conventions
 ========================
 
+.. image:: https://badge.fury.io/py/pep8-naming.png
+    :target: http://badge.fury.io/py/pep8-naming
+    
+.. image:: https://travis-ci.org/flintwork/pep8-naming.png?branch=master
+        :target: https://travis-ci.org/flintwork/pep8-naming
+
+.. image:: https://pypip.in/d/pep8-naming/badge.png
+        :target: https://crate.io/packages/pep8-naming?version=latest
+
 Check the PEP-8 naming conventions.
 
 This module provides a plugin for ``flake8``, the Python code checker.
@@ -60,13 +69,18 @@ These error codes are emitted:
 Changes
 -------
 
-0.x - unreleased
-````````````````
-
+0.2.2 - 2014-04-19
+``````````````````
 * Do not require ``setuptools`` in setup.py.  It works around an issue
   with ``pip`` and Python 3.
 
 * ``__new__`` is now considered as ``classmethod`` implicitly
+
+* Run unit tests on travis-ci.org for python2.6, 2.7, 3.2, and 3.3
+
+* Add unit tests and support running them with setup.py
+
+* Support Python 3.4 
 
 
 0.2.1 - 2013-02-22

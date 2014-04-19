@@ -10,7 +10,7 @@ try:
 except ImportError:
     from flake8.util import ast, iter_child_nodes
 
-__version__ = '0.2.1'
+__version__ = '0.2.2'
 
 LOWERCASE_REGEX = re.compile(r'[_a-z][_a-z0-9]*$')
 UPPERCASE_REGEX = re.compile(r'[_A-Z][_A-Z0-9]*$')
@@ -187,13 +187,19 @@ class FunctionArgNamesCheck(BaseASTCheck):
     N805 = "first argument of a method should be named 'self'"
 
     def visit_functiondef(self, node, parents):
-        if node.args.kwarg is not None:
-            if not self.check(node.args.kwarg):
+
+        def arg_name(arg):
+            return getattr(arg, 'arg', arg)
+
+        kwarg = arg_name(node.args.kwarg)
+        if kwarg is not None:
+            if not self.check(kwarg):
                 yield self.err(node, 'N803')
                 return
 
-        if node.args.vararg is not None:
-            if not self.check(node.args.vararg):
+        vararg = arg_name(node.args.vararg)
+        if vararg is not None:
+            if not self.check(vararg):
                 yield self.err(node, 'N803')
                 return
 

@@ -3,3 +3,8 @@
 *.py[cod]
 .tox
 dist
+.project
+.pydevproject
+.settings/
+build/
+
