@@ -267,4 +267,11 @@ class VariablesInFunctionCheck(BaseASTCheck):
             if not name or name in parent_func.global_names:
                 return
             if not self.check(name) and name[:1] != '_':
+                if isinstance(node.value, ast.Call):
+                    if isinstance(node.value.func, ast.Attribute):
+                        if node.value.func.attr == 'namedtuple':
+                            return
+                    elif isinstance(node.value.func, ast.Name):
+                        if node.value.func.id == 'namedtuple':
+                            return
                 yield self.err(target, 'N806')
