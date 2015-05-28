@@ -52,3 +52,10 @@ class ClassName(object):
     def method(self):
         def __bad():
             pass
+#: Okay
+def setUp():
+    pass
+
+#: Okay
+def tearDown():
+    pass
