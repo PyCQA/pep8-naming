@@ -70,8 +70,9 @@ class NamingChecker(object):
 
     @classmethod
     def add_options(cls, parser):
-        parser.add_option('--ignore-names', default=[], action='store',
-                          type='string', help="Names that should be ignored.")
+        parser.add_option('--ignore-names', default=cls.ignore_names,
+                          action='store', type='string',
+                          help="Names that should be ignored.")
         parser.config_options.append('ignore-names')
 
     @classmethod
