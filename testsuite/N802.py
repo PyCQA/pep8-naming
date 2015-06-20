@@ -66,3 +66,7 @@ class TestCase:
         pass
     def tearDown(self):
         pass
+    def setUpClass(self):
+        pass
+    def tearDownClass(self):
+        pass

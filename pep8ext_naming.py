@@ -61,7 +61,7 @@ class NamingChecker(object):
     """Checker of PEP-8 Naming Conventions."""
     name = 'naming'
     version = __version__
-    ignore_names = ['setUp', 'tearDown', ]
+    ignore_names = ['setUp', 'tearDown', 'setUpClass', 'tearDownClass']
 
     def __init__(self, tree, filename):
         self.visitors = BaseASTCheck._checks
