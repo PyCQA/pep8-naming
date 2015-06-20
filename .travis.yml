@@ -16,3 +16,5 @@ env:
   - TOXENV=py34
   - TOXENV=pypy
   - TOXENV=pypy3
+  - TOXENV=py27-flake8
+  - TOXENV=py34-flake8

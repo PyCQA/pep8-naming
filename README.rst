@@ -69,6 +69,11 @@ These error codes are emitted:
 Changes
 -------
 
+0.3.2 - 2015-06-14
+``````````````````
+
+* Fix bug trying to call ``split`` on a list.
+
 0.3.1 - 2015-06-14
 ``````````````````
 

@@ -10,7 +10,7 @@ try:
 except ImportError:
     from flake8.util import ast, iter_child_nodes
 
-__version__ = '0.3.1'
+__version__ = '0.3.2'
 
 LOWERCASE_REGEX = re.compile(r'[_a-z][_a-z0-9]*$')
 UPPERCASE_REGEX = re.compile(r'[_A-Z][_A-Z0-9]*$')
@@ -70,14 +70,15 @@ class NamingChecker(object):
 
     @classmethod
     def add_options(cls, parser):
-        parser.add_option('--ignore-names', default=cls.ignore_names,
+        ignored = ','.join(cls.ignore_names)
+        parser.add_option('--ignore-names', default=ignored,
                           action='store', type='string',
                           help="Names that should be ignored.")
         parser.config_options.append('ignore-names')
 
     @classmethod
     def parse_options(cls, options):
-        cls.ignore_names = options.ignore_names.split(' ')
+        cls.ignore_names = options.ignore_names.split(', ')
 
     def run(self):
         return self.visit_tree(self._node) if self._node else ()
