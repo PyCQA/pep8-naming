@@ -32,3 +32,17 @@ def bad():
 
     def foo():
         Bad = 1
+
+#: Okay
+def test():
+    # namedtuples are often CamelCased since we treat them a bit like classes
+    import collections
+    Thing = collections.namedtuple('Thing', 'a b c')
+    from collections import namedtuple
+    ThingTwo = namedtuple('ThingTwo', 'a b c')
+
+#: N806
+def bad():
+    # Currently don't support aliased imports of namedtuple
+    from collections import namedtuple as nt
+    Thing = nt('Thing', 'a b c')
