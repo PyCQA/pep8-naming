@@ -98,11 +98,13 @@ class NamingChecker(object):
             self.find_global_defs(node)
 
         method = 'visit_' + node.__class__.__name__.lower()
+        parents = self.parents
+        ignore_names = self.ignore_names
         for visitor in self.visitors:
-            if not hasattr(visitor, method):
+            visitor_method = getattr(visitor, method, None)
+            if visitor_method is None:
                 continue
-            for error in getattr(visitor, method)(node, self.parents,
-                                                  ignore=self.ignore_names):
+            for error in visitor_method(node, parents, ignore_names):
                 yield error
 
     def tag_class_functions(self, cls_node):
