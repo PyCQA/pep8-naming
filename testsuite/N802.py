@@ -59,3 +59,10 @@ def setUp():
 #: Okay
 def tearDown():
     pass
+
+#: Okay
+class TestCase:
+    def setUp(self):
+        pass
+    def tearDown(self):
+        pass
