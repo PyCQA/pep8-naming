@@ -46,8 +46,7 @@ setup(
     zip_safe=False,
     entry_points={
         'flake8.extension': [
-            'N80 = pep8ext_naming:NamingChecker',
-            'N81 = pep8ext_naming:NamingChecker',
+            'N8 = pep8ext_naming:NamingChecker',
         ],
         # Backward compatibility for Flint (now merged into Flake8)
         'flint.extension': [

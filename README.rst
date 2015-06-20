@@ -69,6 +69,12 @@ These error codes are emitted:
 Changes
 -------
 
+0.3.1 - 2015-06-14
+``````````````````
+
+* Fix optparse exception resulting from trying to register an option twice.
+
+
 0.3.0 - 2015-06-14
 ``````````````````
 
@@ -77,6 +83,7 @@ Changes
 * Add ``--ignore-names`` which allows the user to specify a list of names to
   ignore. By default this includes ``setUp``, ``tearDown``, ``setUpClass``,
   and ``tearDownClass``.
+
 
 0.2.2 - 2014-04-19
 ``````````````````
