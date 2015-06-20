@@ -61,11 +61,22 @@ class NamingChecker(object):
     """Checker of PEP-8 Naming Conventions."""
     name = 'naming'
     version = __version__
+    ignore_names = ['setUp', 'tearDown', ]
 
     def __init__(self, tree, filename):
         self.visitors = BaseASTCheck._checks
         self.parents = deque()
         self._node = tree
+
+    @classmethod
+    def add_options(cls, parser):
+        parser.add_option('--ignore-names', default=[], action='store',
+                          type='string', help="Names that should be ignored.")
+        parser.config_options.append('ignore-names')
+
+    @classmethod
+    def parse_options(cls, options):
+        cls.ignore_names = options.ignore_names.split(' ')
 
     def run(self):
         return self.visit_tree(self._node) if self._node else ()
@@ -89,7 +100,8 @@ class NamingChecker(object):
         for visitor in self.visitors:
             if not hasattr(visitor, method):
                 continue
-            for error in getattr(visitor, method)(node, self.parents):
+            for error in getattr(visitor, method)(node, self.parents,
+                                                  ignore=self.ignore_names):
                 yield error
 
     def tag_class_functions(self, cls_node):
@@ -148,7 +160,7 @@ class ClassNameCheck(BaseASTCheck):
     check = MIXEDCASE_REGEX.match
     N801 = "class names should use CapWords convention"
 
-    def visit_classdef(self, node, parents):
+    def visit_classdef(self, node, parents, ignore=None):
         if not self.check(node.name):
             yield self.err(node, 'N801')
 
@@ -165,9 +177,11 @@ class FunctionNameCheck(BaseASTCheck):
     check = LOWERCASE_REGEX.match
     N802 = "function name should be lowercase"
 
-    def visit_functiondef(self, node, parents):
+    def visit_functiondef(self, node, parents, ignore=None):
         function_type = getattr(node, 'function_type', 'function')
         name = node.name
+        if ignore and name in ignore:
+            return
         if ((function_type == 'function' and '__' in (name[:2], name[-2:])) or
                 not self.check(name)):
             yield self.err(node, 'N802')
@@ -186,7 +200,7 @@ class FunctionArgNamesCheck(BaseASTCheck):
     N804 = "first argument of a classmethod should be named 'cls'"
     N805 = "first argument of a method should be named 'self'"
 
-    def visit_functiondef(self, node, parents):
+    def visit_functiondef(self, node, parents, ignore=None):
 
         def arg_name(arg):
             return getattr(arg, 'arg', arg)
@@ -231,7 +245,7 @@ class ImportAsCheck(BaseASTCheck):
     N813 = "camelcase imported as lowercase"
     N814 = "camelcase imported as constant"
 
-    def visit_importfrom(self, node, parents):
+    def visit_importfrom(self, node, parents, ignore=None):
         for name in node.names:
             if not name.asname:
                 continue
@@ -254,7 +268,7 @@ class VariablesInFunctionCheck(BaseASTCheck):
     check = LOWERCASE_REGEX.match
     N806 = "variable in function should be lowercase"
 
-    def visit_assign(self, node, parents):
+    def visit_assign(self, node, parents, ignore=None):
         for parent_func in reversed(parents):
             if isinstance(parent_func, ast.ClassDef):
                 return
