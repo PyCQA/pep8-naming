@@ -15,6 +15,7 @@ __version__ = '0.3.2'
 LOWERCASE_REGEX = re.compile(r'[_a-z][_a-z0-9]*$')
 UPPERCASE_REGEX = re.compile(r'[_A-Z][_A-Z0-9]*$')
 MIXEDCASE_REGEX = re.compile(r'_?[A-Z][a-zA-Z0-9]*$')
+SPLIT_IGNORED_RE = re.compile(r'[,\s]')
 
 
 if sys.version_info[0] < 3:
@@ -78,7 +79,7 @@ class NamingChecker(object):
 
     @classmethod
     def parse_options(cls, options):
-        cls.ignore_names = options.ignore_names.split(', ')
+        cls.ignore_names = SPLIT_IGNORED_RE.split(options.ignore_names)
 
     def run(self):
         return self.visit_tree(self._node) if self._node else ()
