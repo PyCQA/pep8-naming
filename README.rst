@@ -69,6 +69,11 @@ These error codes are emitted:
 Changes
 -------
 
+0.3.3 - 2015-06-30
+``````````````````
+
+* Fix bug where ignored names were not properly split into a list.
+
 0.3.2 - 2015-06-14
 ``````````````````
 
