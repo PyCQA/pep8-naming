@@ -68,6 +68,11 @@ These error codes are emitted:
 
 Changes
 -------
+0.3.4 - 2015-12-28
+``````````````````
+
+* Add ``--ignore-folders`` which allows the user to specify a list of folders
+  to ignore.
 
 0.3.3 - 2015-06-30
 ``````````````````

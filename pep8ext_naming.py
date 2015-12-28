@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Checker of PEP-8 Naming Conventions."""
+import os
 import re
 import sys
 from collections import deque
@@ -10,7 +11,7 @@ try:
 except ImportError:
     from flake8.util import ast, iter_child_nodes
 
-__version__ = '0.3.3'
+__version__ = '0.3.4'
 
 LOWERCASE_REGEX = re.compile(r'[_a-z][_a-z0-9]*$')
 UPPERCASE_REGEX = re.compile(r'[_A-Z][_A-Z0-9]*$')
@@ -63,11 +64,13 @@ class NamingChecker(object):
     name = 'naming'
     version = __version__
     ignore_names = ['setUp', 'tearDown', 'setUpClass', 'tearDownClass']
+    ignore_folders = []
 
     def __init__(self, tree, filename):
         self.visitors = BaseASTCheck._checks
         self.parents = deque()
         self._node = tree
+        self.folder_tree = os.path.dirname(filename)
 
     @classmethod
     def add_options(cls, parser):
@@ -75,13 +78,20 @@ class NamingChecker(object):
         parser.add_option('--ignore-names', default=ignored,
                           action='store', type='string',
                           help="Names that should be ignored.")
+        parser.add_option('--ignore-folders', default='',
+                          action='store', type='string',
+                          help="Folders that should be ignored.")
         parser.config_options.append('ignore-names')
+        parser.config_options.append('ignore-folders')
 
     @classmethod
     def parse_options(cls, options):
         cls.ignore_names = SPLIT_IGNORED_RE.split(options.ignore_names)
+        cls.ignore_folders = SPLIT_IGNORED_RE.split(options.ignore_folders)
 
     def run(self):
+        if self.folder_tree in self.ignore_folders:
+            return ""
         return self.visit_tree(self._node) if self._node else ()
 
     def visit_tree(self, node):
