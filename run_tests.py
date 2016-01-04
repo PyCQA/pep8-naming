@@ -2,12 +2,36 @@ import sys
 import os
 import pep8ext_naming
 import re
+import unittest
 
 PyCF_ONLY_AST = 1024
 
 IS_PY3 = sys.version_info[0] == 3
 IS_PY3_TEST = re.compile("^#\s*python3\s*only")
 IS_PY2_TEST = re.compile("^#\s*python2\s*only")
+
+
+class TestHelperFunctions(unittest.TestCase):
+    """
+    Our basic test class
+    """
+
+    def test_parse_ignore_conventions(self):
+        """
+
+        """
+        line1 = "test/foo:N802, test/bar: N801 N802"
+        line2 = "test/foo:N802,test/bar:N801 N802"  # equal
+        line3 = "test 802, test/bar: N801 - N802"  # not equal
+        solution = {"test/foo": ["N802"], "test/bar": ["N801", "N802"]}
+
+        out1 = pep8ext_naming._parse_ignore_conventions(line1)
+        out2 = pep8ext_naming._parse_ignore_conventions(line2)
+        out3 = pep8ext_naming._parse_ignore_conventions(line3)
+
+        self.assertEqual(out1, solution)
+        self.assertEqual(out2, solution)
+        self.assertNotEqual(out3, solution)
 
 
 def main():
@@ -20,16 +44,16 @@ def main():
             if not is_test_allowed(lines):
                 continue
 
-            for testcase, codes in load_tests(lines):
+            for testcase, codes in load_test_files(lines):
                 test_count += 1
                 errors += test_file(filename, testcase, codes)
 
     if errors == 0:
         print("%s tests run successful" % test_count)
-        sys.exit(0)
+        # sys.exit(0)
     else:
         print("%i of %i tests failed" % (errors, test_count))
-        sys.exit(1)
+        # sys.exit(1)
 
 
 def is_test_allowed(lines):
@@ -42,7 +66,7 @@ def is_test_allowed(lines):
     return True
 
 
-def load_tests(lines):
+def load_test_files(lines):
     testcase = []
     codes = []
     for line in lines:
@@ -79,3 +103,4 @@ def test_file(filename, lines, codes):
 
 if __name__ == '__main__':
     main()
+    unittest.main()

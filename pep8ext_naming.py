@@ -38,6 +38,25 @@ else:
         return pos_args + kw_only
 
 
+def _parse_ignore_conventions(ignore_conventions):
+    """Helper function that parse params options into dict with
+        key = folder and value = list of Conventions
+
+        Args:
+            ignore_conventions (str): --ignore-conventions option
+
+        Returns:
+            dict
+            e.g. {folder1: convention_list, folder2: convention_list, ...}
+    """
+    data = {}
+    for ignore_line in ignore_conventions.split(","):
+        if len(ignore_line.split(":")) == 2:
+            folder = ignore_line.split(":")[0].strip()
+            data[folder] = ignore_line.split(":")[1].strip().split(" ")
+    return data
+
+
 class _ASTCheckMeta(type):
     def __init__(self, class_name, bases, namespace):
         try:
@@ -64,8 +83,8 @@ class NamingChecker(object):
     name = 'naming'
     version = __version__
     ignore_names = ['setUp', 'tearDown', 'setUpClass', 'tearDownClass']
-    ignore_folders = []
-    ignore_conventions = []
+    # {folder1: convention_list, folder2: convention_list, ...}
+    ignore_conventions = {}
 
     def __init__(self, tree, filename):
         self.visitors = BaseASTCheck._checks
@@ -79,28 +98,22 @@ class NamingChecker(object):
         parser.add_option('--ignore-names', default=ignored,
                           action='store', type='string',
                           help="Names that should be ignored.")
-        parser.add_option('--ignore-folders', default='',
-                          action='store', type='string',
-                          help="Folders that should be ignored if "
-                          "for the specified ignore-conventions.")
         parser.add_option(
             '--ignore-conventions',
             default='',
             action='store',
             type='string',
             help="Conventions that should be ignored for the specified "
-                 "ignore-folders. e.g. "
-                 "In folder tests/ I want to ignore just N801 errors.")
+                 "folders. Syntax: folder1: error1 error2, folder2: error3"
+                 "e.g.: tests/foo: N801 N802, tests/bar: N806")
 
         parser.config_options.append('ignore-names')
-        parser.config_options.append('ignore-folders')
         parser.config_options.append('ignore-conventions')
 
     @classmethod
     def parse_options(cls, options):
         cls.ignore_names = SPLIT_IGNORED_RE.split(options.ignore_names)
-        cls.ignore_folders = SPLIT_IGNORED_RE.split(options.ignore_folders)
-        cls.ignore_conventions = SPLIT_IGNORED_RE.split(
+        cls.ignore_conventions = _parse_ignore_conventions(
             options.ignore_conventions)
 
     def run(self):
@@ -133,8 +146,8 @@ class NamingChecker(object):
                 #       '%s %s' and the first value is error code.
                 #       See _err(self, node, code)
                 error_code = error[2].split(" ")[0]
-                if (error_code in self.ignore_conventions
-                        and self.folder_tree in self.ignore_folders):
+                if (error_code in self.ignore_conventions.get(
+                        self.folder_tree, [])):
                     continue
                 yield error
 
