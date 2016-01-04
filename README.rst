@@ -71,8 +71,8 @@ Changes
 0.3.4 - 2015-12-28
 ``````````````````
 
-* Add ``--ignore-folders`` which allows the user to specify a list of folders
-  to ignore.
+* Add ``--ignore-folders`` and ``--ignore-conventions`` which allows the user 
+  to specify a list of conventions to ignore in specified folders
 
 0.3.3 - 2015-06-30
 ``````````````````

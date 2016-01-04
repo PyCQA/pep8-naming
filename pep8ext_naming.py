@@ -65,6 +65,7 @@ class NamingChecker(object):
     version = __version__
     ignore_names = ['setUp', 'tearDown', 'setUpClass', 'tearDownClass']
     ignore_folders = []
+    ignore_conventions = []
 
     def __init__(self, tree, filename):
         self.visitors = BaseASTCheck._checks
@@ -80,18 +81,29 @@ class NamingChecker(object):
                           help="Names that should be ignored.")
         parser.add_option('--ignore-folders', default='',
                           action='store', type='string',
-                          help="Folders that should be ignored.")
+                          help="Folders that should be ignored if "
+                          "for the specified ignore-conventions.")
+        parser.add_option(
+            '--ignore-conventions',
+            default='',
+            action='store',
+            type='string',
+            help="Conventions that should be ignored for the specified "
+                 "ignore-folders. e.g. "
+                 "In folder tests/ I want to ignore just N801 errors.")
+
         parser.config_options.append('ignore-names')
         parser.config_options.append('ignore-folders')
+        parser.config_options.append('ignore-conventions')
 
     @classmethod
     def parse_options(cls, options):
         cls.ignore_names = SPLIT_IGNORED_RE.split(options.ignore_names)
         cls.ignore_folders = SPLIT_IGNORED_RE.split(options.ignore_folders)
+        cls.ignore_conventions = SPLIT_IGNORED_RE.split(
+            options.ignore_conventions)
 
     def run(self):
-        if self.folder_tree in self.ignore_folders:
-            return ""
         return self.visit_tree(self._node) if self._node else ()
 
     def visit_tree(self, node):
@@ -117,6 +129,13 @@ class NamingChecker(object):
             if visitor_method is None:
                 continue
             for error in visitor_method(node, parents, ignore_names):
+                # NOTE: return value #3 is string that is composed with
+                #       '%s %s' and the first value is error code.
+                #       See _err(self, node, code)
+                error_code = error[2].split(" ")[0]
+                if (error_code in self.ignore_conventions
+                        and self.folder_tree in self.ignore_folders):
+                    continue
                 yield error
 
     def tag_class_functions(self, cls_node):
