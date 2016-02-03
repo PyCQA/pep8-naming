@@ -141,14 +141,23 @@ class NamingChecker(object):
             visitor_method = getattr(visitor, method, None)
             if visitor_method is None:
                 continue
+
             for error in visitor_method(node, parents, ignore_names):
                 # NOTE: return value #3 is string that is composed with
                 #       '%s %s' and the first value is error code.
                 #       See _err(self, node, code)
                 error_code = error[2].split(" ")[0]
-                if (error_code in self.ignore_conventions.get(
-                        self.folder_tree, [])):
+                should_ignore = False
+                # for working with absolute paths
+                for folders, conventions in self.ignore_conventions.items():
+                    if (self.folder_tree.endswith(folders) and
+                            error_code in conventions):
+                        should_ignore = True
+                        break
+
+                if should_ignore:
                     continue
+
                 yield error
 
     def tag_class_functions(self, cls_node):
