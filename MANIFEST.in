@@ -1,0 +1,2 @@
+include run_tests.py
+recursive-include testsuite *.py
