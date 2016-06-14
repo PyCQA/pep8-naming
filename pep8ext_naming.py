@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Checker of PEP-8 Naming Conventions."""
+import os
 import re
 import sys
 from collections import deque
@@ -10,7 +11,7 @@ try:
 except ImportError:
     from flake8.util import ast, iter_child_nodes
 
-__version__ = '0.3.3'
+__version__ = '0.3.4'
 
 LOWERCASE_REGEX = re.compile(r'[_a-z][_a-z0-9]*$')
 UPPERCASE_REGEX = re.compile(r'[_A-Z][_A-Z0-9]*$')
@@ -35,6 +36,25 @@ else:
         pos_args = [arg.arg for arg in node.args.args]
         kw_only = [arg.arg for arg in node.args.kwonlyargs]
         return pos_args + kw_only
+
+
+def _parse_ignore_conventions(ignore_conventions):
+    """Helper function that parse params options into dict with
+        key = folder and value = list of Conventions
+
+        Args:
+            ignore_conventions (str): --ignore-conventions option
+
+        Returns:
+            dict
+            e.g. {folder1: convention_list, folder2: convention_list, ...}
+    """
+    data = {}
+    for ignore_line in ignore_conventions.split(","):
+        if len(ignore_line.split(":")) == 2:
+            folder = ignore_line.split(":")[0].strip()
+            data[folder] = ignore_line.split(":")[1].strip().split(" ")
+    return data
 
 
 class _ASTCheckMeta(type):
@@ -63,11 +83,14 @@ class NamingChecker(object):
     name = 'naming'
     version = __version__
     ignore_names = ['setUp', 'tearDown', 'setUpClass', 'tearDownClass']
+    # {folder1: convention_list, folder2: convention_list, ...}
+    ignore_conventions = {}
 
     def __init__(self, tree, filename):
         self.visitors = BaseASTCheck._checks
         self.parents = deque()
         self._node = tree
+        self.folder_tree = os.path.dirname(filename)
 
     @classmethod
     def add_options(cls, parser):
@@ -75,11 +98,23 @@ class NamingChecker(object):
         parser.add_option('--ignore-names', default=ignored,
                           action='store', type='string',
                           help="Names that should be ignored.")
+        parser.add_option(
+            '--ignore-conventions',
+            default='',
+            action='store',
+            type='string',
+            help="Conventions that should be ignored for the specified "
+                 "folders. Syntax: folder1: error1 error2, folder2: error3"
+                 "e.g.: tests/foo: N801 N802, tests/bar: N806")
+
         parser.config_options.append('ignore-names')
+        parser.config_options.append('ignore-conventions')
 
     @classmethod
     def parse_options(cls, options):
         cls.ignore_names = SPLIT_IGNORED_RE.split(options.ignore_names)
+        cls.ignore_conventions = _parse_ignore_conventions(
+            options.ignore_conventions)
 
     def run(self):
         return self.visit_tree(self._node) if self._node else ()
@@ -106,7 +141,23 @@ class NamingChecker(object):
             visitor_method = getattr(visitor, method, None)
             if visitor_method is None:
                 continue
+
             for error in visitor_method(node, parents, ignore_names):
+                # NOTE: return value #3 is string that is composed with
+                #       '%s %s' and the first value is error code.
+                #       See _err(self, node, code)
+                error_code = error[2].split(" ")[0]
+                should_ignore = False
+                # for working with absolute paths
+                for folders, conventions in self.ignore_conventions.items():
+                    if (self.folder_tree.endswith(folders) and
+                            error_code in conventions):
+                        should_ignore = True
+                        break
+
+                if should_ignore:
+                    continue
+
                 yield error
 
     def tag_class_functions(self, cls_node):
