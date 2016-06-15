@@ -4,11 +4,11 @@ PEP-8 Naming Conventions
 .. image:: https://badge.fury.io/py/pep8-naming.png
     :target: http://badge.fury.io/py/pep8-naming
     
-.. image:: https://travis-ci.org/flintwork/pep8-naming.png?branch=master
-        :target: https://travis-ci.org/flintwork/pep8-naming
+.. image:: https://travis-ci.org/PyCQA/pep8-naming.svg?branch=master
+        :target: https://travis-ci.org/PyCQA/pep8-naming
 
-.. image:: https://pypip.in/d/pep8-naming/badge.png
-        :target: https://crate.io/packages/pep8-naming?version=latest
+.. image:: https://img.shields.io/pypi/dm/pep8-naming.svg
+        :target: https://pypi.python.org/pypi/pep8-naming/
 
 Check the PEP-8 naming conventions.
 
