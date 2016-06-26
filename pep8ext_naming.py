@@ -98,7 +98,8 @@ class NamingChecker(object):
 
     @classmethod
     def parse_options(cls, options):
-        if not isinstance(options.ignore_names, list):
+        cls.ignore_names = options.ignore_names
+        if not isinstance(cls.ignore_names, list):
             cls.ignore_names = SPLIT_IGNORED_RE.split(options.ignore_names)
 
     def run(self):
