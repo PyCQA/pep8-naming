@@ -60,6 +60,12 @@ These error codes are emitted:
 Changes
 -------
 
+0.4.1 - 2016-06-26
+``````````````````
+
+* Note to self: Never do releases before ~0600 or coffee on a Sunday.
+* Fix option parsing for Flake8 3.0 (store parsed value on class)
+
 0.4.0 - 2016-06-26
 ``````````````````
 
