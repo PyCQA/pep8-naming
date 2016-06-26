@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Checker of PEP-8 Naming Conventions."""
+import optparse
 import re
 import sys
 from collections import deque
@@ -10,7 +11,7 @@ try:
 except ImportError:
     from flake8.util import ast, iter_child_nodes
 
-__version__ = '0.3.3'
+__version__ = '0.4.0'
 
 LOWERCASE_REGEX = re.compile(r'[_a-z][_a-z0-9]*$')
 UPPERCASE_REGEX = re.compile(r'[_A-Z][_A-Z0-9]*$')
@@ -58,6 +59,20 @@ BaseASTCheck = _ASTCheckMeta('BaseASTCheck', (object,),
                              {'__doc__': "Base for AST Checks.", 'err': _err})
 
 
+def register_opt(parser, *args, **kwargs):
+    try:
+        # Flake8 3.x registration
+        parser.add_option(*args, **kwargs)
+    except (optparse.OptionError, TypeError):
+        # Flake8 2.x registration
+        parse_from_config = kwargs.pop('parse_from_config', False)
+        kwargs.pop('comma_separated_list', False)
+        kwargs.pop('normalize_paths', False)
+        parser.add_option(*args, **kwargs)
+        if parse_from_config:
+            parser.config_options.append(args[-1].lstrip('-'))
+
+
 class NamingChecker(object):
     """Checker of PEP-8 Naming Conventions."""
     name = 'naming'
@@ -72,14 +87,19 @@ class NamingChecker(object):
     @classmethod
     def add_options(cls, parser):
         ignored = ','.join(cls.ignore_names)
-        parser.add_option('--ignore-names', default=ignored,
-                          action='store', type='string',
-                          help="Names that should be ignored.")
-        parser.config_options.append('ignore-names')
+        register_opt(parser, '--ignore-names',
+                     default=ignored,
+                     action='store',
+                     type='string',
+                     parse_from_config=True,
+                     comma_separated_list=True,
+                     help='List of names the pep8-naming plugin should '
+                          'ignore. (Defaults to %default)')
 
     @classmethod
     def parse_options(cls, options):
-        cls.ignore_names = SPLIT_IGNORED_RE.split(options.ignore_names)
+        if not isinstance(options.ignore_names, list):
+            cls.ignore_names = SPLIT_IGNORED_RE.split(options.ignore_names)
 
     def run(self):
         return self.visit_tree(self._node) if self._node else ()
