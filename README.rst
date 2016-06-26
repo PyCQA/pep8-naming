@@ -60,6 +60,12 @@ These error codes are emitted:
 Changes
 -------
 
+0.4.0 - 2016-06-26
+``````````````````
+
+* Fix integration with Flake8 3.0.0b1
+* Start testing against Python 3.5
+
 0.3.3 - 2015-06-30
 ``````````````````
 
