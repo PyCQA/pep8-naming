@@ -14,3 +14,8 @@ class Foo(object):
 
     def __init_subclass(self, ads):
         pass
+#: N804(--classmethod-decorators=clazzy,cool)
+class NewClassIsRequired(object):
+    @cool
+    def test(self, sy):
+        pass

@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """Checker of PEP-8 Naming Conventions."""
-import optparse
 import re
 import sys
 from collections import deque
+
+from flake8_polyfill import options
 
 try:
     import ast
@@ -16,7 +17,6 @@ __version__ = '0.4.1'
 LOWERCASE_REGEX = re.compile(r'[_a-z][_a-z0-9]*$')
 UPPERCASE_REGEX = re.compile(r'[_A-Z][_A-Z0-9]*$')
 MIXEDCASE_REGEX = re.compile(r'_?[A-Z][a-zA-Z0-9]*$')
-SPLIT_IGNORED_RE = re.compile(r'[,\s]')
 
 
 if sys.version_info[0] < 3:
@@ -64,18 +64,24 @@ BaseASTCheck = _ASTCheckMeta('BaseASTCheck', (object,),
                              {'__doc__': "Base for AST Checks.", 'err': _err})
 
 
-def register_opt(parser, *args, **kwargs):
-    try:
-        # Flake8 3.x registration
-        parser.add_option(*args, **kwargs)
-    except (optparse.OptionError, TypeError):
-        # Flake8 2.x registration
-        parse_from_config = kwargs.pop('parse_from_config', False)
-        kwargs.pop('comma_separated_list', False)
-        kwargs.pop('normalize_paths', False)
-        parser.add_option(*args, **kwargs)
-        if parse_from_config:
-            parser.config_options.append(args[-1].lstrip('-'))
+class _FunctionType(object):
+    CLASSMETHOD = 'classmethod'
+    STATICMETHOD = 'staticmethod'
+    FUNCTION = 'function'
+    METHOD = 'method'
+
+
+_default_classmethod_decorators = ['classmethod']
+_default_staticmethod_decorators = ['staticmethod']
+
+
+def _build_decorator_to_type(classmethod_decorators, staticmethod_decorators):
+    decorator_to_type = {}
+    for decorator in classmethod_decorators:
+        decorator_to_type[decorator] = _FunctionType.CLASSMETHOD
+    for decorator in staticmethod_decorators:
+        decorator_to_type[decorator] = _FunctionType.STATICMETHOD
+    return decorator_to_type
 
 
 class NamingChecker(object):
@@ -83,6 +89,8 @@ class NamingChecker(object):
     name = 'naming'
     version = __version__
     ignore_names = ['setUp', 'tearDown', 'setUpClass', 'tearDownClass']
+    decorator_to_type = _build_decorator_to_type(
+        _default_classmethod_decorators, _default_staticmethod_decorators)
 
     def __init__(self, tree, filename):
         self.visitors = BaseASTCheck._checks
@@ -91,21 +99,41 @@ class NamingChecker(object):
 
     @classmethod
     def add_options(cls, parser):
-        ignored = ','.join(cls.ignore_names)
-        register_opt(parser, '--ignore-names',
-                     default=ignored,
-                     action='store',
-                     type='string',
-                     parse_from_config=True,
-                     comma_separated_list=True,
-                     help='List of names the pep8-naming plugin should '
-                          'ignore. (Defaults to %default)')
+        options.register(parser, '--ignore-names',
+                         default=cls.ignore_names,
+                         action='store',
+                         type='string',
+                         parse_from_config=True,
+                         comma_separated_list=True,
+                         help='List of names the pep8-naming plugin should '
+                              'ignore. (Defaults to %default)')
+
+        options.register(parser, '--classmethod-decorators',
+                         default=_default_classmethod_decorators,
+                         action='store',
+                         type='string',
+                         parse_from_config=True,
+                         comma_separated_list=True,
+                         help='List of method decorators pep8-naming plugin '
+                              'should consider classmethods (Defaults to '
+                              '%default)')
+
+        options.register(parser, '--staticmethod-decorators',
+                         default=_default_staticmethod_decorators,
+                         action='store',
+                         type='string',
+                         parse_from_config=True,
+                         comma_separated_list=True,
+                         help='List of method decorators pep8-naming plugin '
+                              'should consider staticmethods (Defaults to '
+                              '%default)')
 
     @classmethod
     def parse_options(cls, options):
         cls.ignore_names = options.ignore_names
-        if not isinstance(cls.ignore_names, list):
-            cls.ignore_names = SPLIT_IGNORED_RE.split(options.ignore_names)
+        cls.decorator_to_type = _build_decorator_to_type(
+            options.classmethod_decorators,
+            options.staticmethod_decorators)
 
     def run(self):
         return self.visit_tree(self._node) if self._node else ()
@@ -146,26 +174,27 @@ class NamingChecker(object):
                     isinstance(node.value.func, ast.Name)):
                 continue
             func_name = node.value.func.id
-            if func_name in ('classmethod', 'staticmethod'):
-                meth = (len(node.value.args) == 1 and node.value.args[0])
-                if isinstance(meth, ast.Name):
-                    late_decoration[meth.id] = func_name
+            if func_name not in self.decorator_to_type:
+                continue
+            meth = (len(node.value.args) == 1 and node.value.args[0])
+            if isinstance(meth, ast.Name):
+                late_decoration[meth.id] = self.decorator_to_type[func_name]
 
         # iterate over all functions and tag them
         for node in iter_child_nodes(cls_node):
             if not isinstance(node, ast.FunctionDef):
                 continue
 
-            node.function_type = 'method'
+            node.function_type = _FunctionType.METHOD
             if node.name in ('__new__', '__init_subclass__'):
-                node.function_type = 'classmethod'
-
+                node.function_type = _FunctionType.CLASSMETHOD
             if node.name in late_decoration:
                 node.function_type = late_decoration[node.name]
             elif node.decorator_list:
-                names = [d.id for d in node.decorator_list
+                names = [self.decorator_to_type[d.id]
+                         for d in node.decorator_list
                          if isinstance(d, ast.Name) and
-                         d.id in ('classmethod', 'staticmethod')]
+                         d.id in self.decorator_to_type]
                 if names:
                     node.function_type = names[0]
 
@@ -209,7 +238,7 @@ class FunctionNameCheck(BaseASTCheck):
     N802 = "function name '{name}' should be lowercase xxx"
 
     def visit_functiondef(self, node, parents, ignore=None):
-        function_type = getattr(node, 'function_type', 'function')
+        function_type = getattr(node, 'function_type', _FunctionType.FUNCTION)
         name = node.name
         if ignore and name in ignore:
             return
@@ -253,10 +282,10 @@ class FunctionArgNamesCheck(BaseASTCheck):
             return
         function_type = getattr(node, 'function_type', 'function')
 
-        if function_type == 'method':
+        if function_type == _FunctionType.METHOD:
             if arg_names[0] != 'self':
                 yield self.err(node, 'N805')
-        elif function_type == 'classmethod':
+        elif function_type == _FunctionType.CLASSMETHOD:
             if arg_names[0] != 'cls':
                 yield self.err(node, 'N804')
         for arg in arg_names:

@@ -1,13 +1,18 @@
-import sys
+import optparse
 import os
-import pep8ext_naming
 import re
+import sys
+
+import pep8ext_naming
+
 
 PyCF_ONLY_AST = 1024
 
 IS_PY3 = sys.version_info[0] == 3
 IS_PY3_TEST = re.compile(r"^#\s*python3\s*only")
 IS_PY2_TEST = re.compile(r"^#\s*python2\s*only")
+
+TESTCASE_RE = re.compile("^#: (?P<code>\w+)(\((?P<options>.+)\))?$")
 
 
 def main():
@@ -19,10 +24,9 @@ def main():
             lines = list(fd)
             if not is_test_allowed(lines):
                 continue
-
-            for testcase, codes in load_tests(lines):
+            for testcase, code, options in load_tests(lines):
                 test_count += 1
-                errors += test_file(filename, testcase, codes)
+                errors += test_file(filename, testcase, code, options)
 
     if errors == 0:
         print("%s tests run successful" % test_count)
@@ -43,38 +47,59 @@ def is_test_allowed(lines):
 
 
 def load_tests(lines):
+    options = None
     testcase = []
-    codes = []
+    code = None
     for line in lines:
-        if line.startswith("#:"):
+        line_match = TESTCASE_RE.match(line)
+        if line_match:
             if testcase:
-                yield testcase, codes
+                yield testcase, code, options
                 del testcase[:]
-            codes = line.split()[1:]
+            code = line_match.group('code')
+            if line_match.group('options'):
+                options = [line_match.group('options')]
+            else:
+                options = None
         else:
             testcase.append(line)
 
-    if testcase and codes:
-        yield testcase, codes
+    if testcase and code:
+        yield testcase, code, options
 
 
-def test_file(filename, lines, codes):
+class OptionsManager(optparse.OptionParser):
+    """A Flake8-2.x-compatible OptionsManager."""
+    def __init__(self, *args, **kwargs):
+        optparse.OptionParser.__init__(self, *args, **kwargs)
+        self.config_options = []
+
+
+def parse_options(checker, options):
+    """Parse the CLI-style flags from `options` and expose to `checker`"""
+    options_manager = OptionsManager('flake8')
+    checker.add_options(options_manager)
+    processed_options, _ = options_manager.parse_args(options)
+    checker.parse_options(processed_options)
+
+
+def test_file(filename, lines, code, options):
     tree = compile(''.join(lines), '', 'exec', PyCF_ONLY_AST)
     checker = pep8ext_naming.NamingChecker(tree, filename)
+    parse_options(checker, options)
+
     found_errors = []
     for lineno, col_offset, msg, instance in checker.run():
         found_errors.append(msg.split()[0])
 
-    if not found_errors and codes == ['Okay']:
+    if code is None:  # Invalid test case
         return 0
-
-    errors = 0
-    for code in codes:
-        if code not in found_errors:
-            errors += 1
-            print("ERROR: %s not in %s" % (code, filename))
-
-    return errors
+    if not found_errors and code == 'Okay':  # Expected PASS
+        return 0
+    if code in found_errors:  # Expected FAIL
+        return 0
+    print("ERROR: %s not in %s" % (code, filename))
+    return 1
 
 
 if __name__ == '__main__':
