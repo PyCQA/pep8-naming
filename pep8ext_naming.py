@@ -55,6 +55,8 @@ def _err(self, node, code):
         lineno += len(node.decorator_list)
         col_offset += 4
     return (lineno, col_offset, '%s %s' % (code, getattr(self, code)), self)
+
+
 BaseASTCheck = _ASTCheckMeta('BaseASTCheck', (object,),
                              {'__doc__': "Base for AST Checks.", 'err': _err})
 
