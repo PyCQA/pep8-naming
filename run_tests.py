@@ -6,8 +6,8 @@ import re
 PyCF_ONLY_AST = 1024
 
 IS_PY3 = sys.version_info[0] == 3
-IS_PY3_TEST = re.compile("^#\s*python3\s*only")
-IS_PY2_TEST = re.compile("^#\s*python2\s*only")
+IS_PY3_TEST = re.compile(r"^#\s*python3\s*only")
+IS_PY2_TEST = re.compile(r"^#\s*python2\s*only")
 
 
 def main():
