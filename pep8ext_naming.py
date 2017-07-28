@@ -154,7 +154,7 @@ class NamingChecker(object):
                 continue
 
             node.function_type = 'method'
-            if node.name == '__new__':
+            if node.name in ('__new__', '__init_subclass__'):
                 node.function_type = 'classmethod'
 
             if node.name in late_decoration:
