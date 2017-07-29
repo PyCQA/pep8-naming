@@ -11,3 +11,6 @@ class Foo(object):
     @calling()
     def test(self, ads):
         pass
+
+    def __init_subclass(self, ads):
+        pass

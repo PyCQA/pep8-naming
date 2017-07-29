@@ -14,3 +14,8 @@ class Foo(object):
     @classmethod
     def __prepare__(cls):
         pass
+
+#: Okay
+class Foo(object):
+    def __init_subclass__(cls):
+        pass
