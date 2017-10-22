@@ -46,7 +46,7 @@ class _ASTCheckMeta(type):
             self._checks = []
 
 
-def _err(self, node, code):
+def _err(self, node, code, name=None):
     lineno, col_offset = node.lineno, node.col_offset
     if isinstance(node, ast.ClassDef):
         lineno += len(node.decorator_list)
@@ -54,7 +54,10 @@ def _err(self, node, code):
     elif isinstance(node, ast.FunctionDef):
         lineno += len(node.decorator_list)
         col_offset += 4
-    return (lineno, col_offset, '%s %s' % (code, getattr(self, code)), self)
+    code_str = getattr(self, code)
+    if name is not None:
+        code_str = code_str.format(name=name)
+    return (lineno, col_offset, '%s %s' % (code, code_str), self)
 
 
 BaseASTCheck = _ASTCheckMeta('BaseASTCheck', (object,),
@@ -186,11 +189,11 @@ class ClassNameCheck(BaseASTCheck):
     Classes for internal use have a leading underscore in addition.
     """
     check = MIXEDCASE_REGEX.match
-    N801 = "class names should use CapWords convention"
+    N801 = "class name '{name}' should use CapWords convention"
 
     def visit_classdef(self, node, parents, ignore=None):
         if not self.check(node.name):
-            yield self.err(node, 'N801')
+            yield self.err(node, 'N801', node.name)
 
 
 class FunctionNameCheck(BaseASTCheck):
@@ -203,7 +206,7 @@ class FunctionNameCheck(BaseASTCheck):
     prevailing style (e.g. threading.py), to retain backwards compatibility.
     """
     check = LOWERCASE_REGEX.match
-    N802 = "function name should be lowercase"
+    N802 = "function name '{name}' should be lowercase xxx"
 
     def visit_functiondef(self, node, parents, ignore=None):
         function_type = getattr(node, 'function_type', 'function')
@@ -212,7 +215,7 @@ class FunctionNameCheck(BaseASTCheck):
             return
         if ((function_type == 'function' and '__' in (name[:2], name[-2:])) or
                 not self.check(name)):
-            yield self.err(node, 'N802')
+            yield self.err(node, 'N802', name)
 
 
 class FunctionArgNamesCheck(BaseASTCheck):
@@ -224,7 +227,7 @@ class FunctionArgNamesCheck(BaseASTCheck):
     A method should have 'self' as first argument.
     """
     check = LOWERCASE_REGEX.match
-    N803 = "argument name should be lowercase"
+    N803 = "argument name '{name}' should be lowercase"
     N804 = "first argument of a classmethod should be named 'cls'"
     N805 = "first argument of a method should be named 'self'"
 
@@ -236,13 +239,13 @@ class FunctionArgNamesCheck(BaseASTCheck):
         kwarg = arg_name(node.args.kwarg)
         if kwarg is not None:
             if not self.check(kwarg):
-                yield self.err(node, 'N803')
+                yield self.err(node, 'N803', kwarg)
                 return
 
         vararg = arg_name(node.args.vararg)
         if vararg is not None:
             if not self.check(vararg):
-                yield self.err(node, 'N803')
+                yield self.err(node, 'N803', vararg)
                 return
 
         arg_names = get_arg_names(node)
@@ -258,7 +261,7 @@ class FunctionArgNamesCheck(BaseASTCheck):
                 yield self.err(node, 'N804')
         for arg in arg_names:
             if not self.check(arg):
-                yield self.err(node, 'N803')
+                yield self.err(node, 'N803', arg)
                 return
 
 
@@ -268,10 +271,10 @@ class ImportAsCheck(BaseASTCheck):
     """
     check_lower = LOWERCASE_REGEX.match
     check_upper = UPPERCASE_REGEX.match
-    N811 = "constant imported as non constant"
-    N812 = "lowercase imported as non lowercase"
-    N813 = "camelcase imported as lowercase"
-    N814 = "camelcase imported as constant"
+    N811 = "constant '{name}' imported as non constant"
+    N812 = "lowercase '{name}' imported as non lowercase"
+    N813 = "camelcase '{name}' imported as lowercase"
+    N814 = "camelcase '{name}' imported as constant"
 
     def visit_importfrom(self, node, parents, ignore=None):
         for name in node.names:
@@ -279,14 +282,14 @@ class ImportAsCheck(BaseASTCheck):
                 continue
             if self.check_upper(name.name):
                 if not self.check_upper(name.asname):
-                    yield self.err(node, 'N811')
+                    yield self.err(node, 'N811', name.asname)
             elif self.check_lower(name.name):
                 if not self.check_lower(name.asname):
-                    yield self.err(node, 'N812')
+                    yield self.err(node, 'N812', name.asname)
             elif self.check_lower(name.asname):
-                yield self.err(node, 'N813')
+                yield self.err(node, 'N813', name.asname)
             elif self.check_upper(name.asname):
-                yield self.err(node, 'N814')
+                yield self.err(node, 'N814', name.asname)
 
 
 class VariablesInFunctionCheck(BaseASTCheck):
@@ -294,7 +297,7 @@ class VariablesInFunctionCheck(BaseASTCheck):
     Local variables in functions should be lowercase
     """
     check = LOWERCASE_REGEX.match
-    N806 = "variable in function should be lowercase"
+    N806 = "variable '{name}' in function should be lowercase"
 
     def visit_assign(self, node, parents, ignore=None):
         for parent_func in reversed(parents):
@@ -316,4 +319,4 @@ class VariablesInFunctionCheck(BaseASTCheck):
                     elif isinstance(node.value.func, ast.Name):
                         if node.value.func.id == 'namedtuple':
                             return
-                yield self.err(target, 'N806')
+                yield self.err(target, 'N806', name)
