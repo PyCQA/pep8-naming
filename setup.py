@@ -43,6 +43,7 @@ setup(
     url='https://github.com/flintwork/pep8-naming',
     license='Expat license',
     py_modules=['pep8ext_naming'],
+    install_requires=['flake8_polyfill>=1.0.2,<2'],
     zip_safe=False,
     entry_points={
         'flake8.extension': [
