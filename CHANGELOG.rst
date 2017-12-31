@@ -1,6 +1,16 @@
 Changes
 =======
 
+0.5.0 - 2018-01-02
+------------------
+
+* Add configurable list of classmethod and staticmethod decorators
+
+* Print the offending name as part of the error message
+
+* Correct N804/N805 for __init_subclass__
+
+
 0.4.1 - 2016-06-26
 ------------------
 
