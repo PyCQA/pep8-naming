@@ -39,11 +39,11 @@ else:
 
 
 class _ASTCheckMeta(type):
-    def __init__(self, class_name, bases, namespace):
+    def __init__(cls, class_name, bases, namespace):
         try:
-            self._checks.append(self())
+            cls._checks.append(cls())
         except AttributeError:
-            self._checks = []
+            cls._checks = []
 
 
 def _err(self, node, code, name=None):
