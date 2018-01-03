@@ -39,11 +39,11 @@ else:
 
 
 class _ASTCheckMeta(type):
-    def __init__(self, class_name, bases, namespace):
+    def __init__(cls, class_name, bases, namespace):
         try:
-            self._checks.append(self())
+            cls._checks.append(cls())
         except AttributeError:
-            self._checks = []
+            cls._checks = []
 
 
 def _err(self, node, code, name=None):
@@ -180,13 +180,16 @@ class NamingChecker(object):
             if isinstance(meth, ast.Name):
                 late_decoration[meth.id] = self.decorator_to_type[func_name]
 
+        # If this class inherits from `type`, it's a metaclass, and we'll
+        # consider all of it's methods to be classmethods.
+        ismetaclass = any(name for name in cls_node.bases if name.id == 'type')
+
         # iterate over all functions and tag them
         for node in iter_child_nodes(cls_node):
             if not isinstance(node, ast.FunctionDef):
                 continue
-
             node.function_type = _FunctionType.METHOD
-            if node.name in ('__new__', '__init_subclass__'):
+            if node.name in ('__new__', '__init_subclass__') or ismetaclass:
                 node.function_type = _FunctionType.CLASSMETHOD
             if node.name in late_decoration:
                 node.function_type = late_decoration[node.name]

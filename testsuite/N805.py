@@ -30,6 +30,12 @@ class Foo(object):
 class Foo(object):
     def __init_subclass__(cls):
         pass
+#: Okay
+class Meta(type):
+    def __new__(cls, name, bases, attrs):
+        pass
+    def test(cls):
+        pass
 #: Okay(--classmethod-decorators=clazzy,cool)
 class NewClassmethodDecorators(object):
     @clazzy

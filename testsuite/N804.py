@@ -19,3 +19,11 @@ class NewClassIsRequired(object):
     @cool
     def test(self, sy):
         pass
+#: N804
+class Meta(type):
+    def __new__(self, name, bases, attrs):
+        pass
+#: Okay
+class MetaMethod(type):
+    def test(cls):
+        pass
