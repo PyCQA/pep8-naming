@@ -232,22 +232,25 @@ class FunctionNameCheck(BaseASTCheck):
     """
     Function names should be lowercase, with words separated by underscores
     as necessary to improve readability.
-    Functions *not* beeing methods '__' in front and back are not allowed.
+
+    Functions *not* being methods '__' in front and back are not allowed.
 
     mixedCase is allowed only in contexts where that's already the
     prevailing style (e.g. threading.py), to retain backwards compatibility.
     """
     check = LOWERCASE_REGEX.match
     N802 = "function name '{name}' should be lowercase xxx"
+    N807 = "function name '{name}' should not start or end with '__'"
 
     def visit_functiondef(self, node, parents, ignore=None):
         function_type = getattr(node, 'function_type', _FunctionType.FUNCTION)
         name = node.name
         if ignore and name in ignore:
             return
-        if ((function_type == 'function' and '__' in (name[:2], name[-2:])) or
-                not self.check(name)):
+        if not self.check(name):
             yield self.err(node, 'N802', name)
+        if function_type == 'function' and '__' in (name[:2], name[-2:]):
+            yield self.err(node, 'N807', name)
 
 
 class FunctionArgNamesCheck(BaseASTCheck):
