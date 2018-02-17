@@ -1,15 +1,6 @@
 #: Okay
 def ok():
     pass
-#: N802
-def __bad():
-    pass
-#: N802
-def bad__():
-    pass
-#: N802
-def __bad__():
-    pass
 #: Okay
 def _ok():
     pass
@@ -47,11 +38,6 @@ class ClassName(object):
 class ClassName(object):
     def notOk(self):
         pass
-#: N802
-class ClassName(object):
-    def method(self):
-        def __bad():
-            pass
 #: Okay
 def setUp():
     pass
