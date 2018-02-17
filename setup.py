@@ -40,7 +40,7 @@ setup(
     keywords='flake8 pep8 naming',
     author='Florent Xicluna',
     author_email='florent.xicluna@gmail.com',
-    url='https://github.com/flintwork/pep8-naming',
+    url='https://github.com/PyCQA/pep8-naming',
     license='Expat license',
     py_modules=['pep8ext_naming'],
     install_requires=['flake8_polyfill>=1.0.2,<2'],
