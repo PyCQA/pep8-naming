@@ -1,6 +1,14 @@
 Changes
 =======
 
+0.6.0 - 2018-05-04
+------------------
+
+* Separate check for ``__`` in function names to its own code: N807
+
+* Consider all metaclass methods to be class methods
+
+
 0.5.0 - 2018-01-02
 ------------------
 

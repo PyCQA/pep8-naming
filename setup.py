@@ -4,7 +4,7 @@ from setuptools import setup
 from setuptools.command.test import test as TestCommand
 
 
-def get_version(fname='pep8ext_naming.py'):
+def get_version(fname='src/pep8ext_naming.py'):
     with open(fname) as f:
         for line in f:
             if line.startswith('__version__'):
@@ -42,6 +42,7 @@ setup(
     author_email='florent.xicluna@gmail.com',
     url='https://github.com/PyCQA/pep8-naming',
     license='Expat license',
+    package_dir={'': 'src'},
     py_modules=['pep8ext_naming'],
     install_requires=['flake8_polyfill>=1.0.2,<2'],
     zip_safe=False,
@@ -49,20 +50,17 @@ setup(
         'flake8.extension': [
             'N8 = pep8ext_naming:NamingChecker',
         ],
-        # Backward compatibility for Flint (now merged into Flake8)
-        'flint.extension': [
-            'N80 = pep8ext_naming:NamingChecker',
-            'N81 = pep8ext_naming:NamingChecker',
-        ],
     },
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 5 - Production/Stable',
         'Environment :: Console',
+        'Framework :: Flake8',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: Software Development :: Quality Assurance',
