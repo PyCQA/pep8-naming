@@ -27,3 +27,10 @@ class Meta(type):
 class MetaMethod(type):
     def test(cls):
         pass
+#: Okay
+class NotMeta(object):
+    otherclass = Foo
+class AttributeParent(NotMeta.otherclass):
+    pass
+class CallParent(type('_tmp', (), {})):
+    pass
