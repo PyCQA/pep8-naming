@@ -182,7 +182,7 @@ class NamingChecker(object):
 
         # If this class inherits from `type`, it's a metaclass, and we'll
         # consider all of it's methods to be classmethods.
-        ismetaclass = any(name for name in cls_node.bases if name.id == 'type')
+        ismetaclass = any(name for name in cls_node.bases if getattr(name, 'id', None) == 'type')
 
         # iterate over all functions and tag them
         for node in iter_child_nodes(cls_node):
