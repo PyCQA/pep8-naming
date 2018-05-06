@@ -1,6 +1,12 @@
 Changes
 =======
 
+0.6.1 - 2018-05-06
+------------------
+
+* Fix N804 check for ``cls`` used in metaclass methods (See also
+  https://github.com/PyCQA/pep8-naming/issues/53)
+
 0.6.0 - 2018-05-04
 ------------------
 
