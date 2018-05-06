@@ -180,9 +180,10 @@ class NamingChecker(object):
             if isinstance(meth, ast.Name):
                 late_decoration[meth.id] = self.decorator_to_type[func_name]
 
+        cls_bases = [b for b in cls_node.bases if isinstance(b, ast.Name)]
         # If this class inherits from `type`, it's a metaclass, and we'll
         # consider all of it's methods to be classmethods.
-        ismetaclass = any(name for name in cls_node.bases if name.id == 'type')
+        ismetaclass = any(name for name in cls_bases if name.id == 'type')
 
         # iterate over all functions and tag them
         for node in iter_child_nodes(cls_node):
