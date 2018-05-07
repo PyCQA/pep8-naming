@@ -1,3 +1,22 @@
+#: Okay
+class C1:
+    def __str__(self):
+        return ''
+#: Okay
+class C2:
+    if True:
+        def __str__(self):
+            return ''
+#: Okay
+class C3:
+    try:
+        if True:
+            while True:
+                def __str__(self):
+                    return ''
+                break
+    except:
+        pass
 #: N807
 def __bad():
     pass
