@@ -240,7 +240,7 @@ class FunctionNameCheck(BaseASTCheck):
     prevailing style (e.g. threading.py), to retain backwards compatibility.
     """
     check = LOWERCASE_REGEX.match
-    N802 = "function name '{name}' should be lowercase xxx"
+    N802 = "function name '{name}' should be lowercase"
     N807 = "function name '{name}' should not start or end with '__'"
 
     def visit_functiondef(self, node, parents, ignore=None):
