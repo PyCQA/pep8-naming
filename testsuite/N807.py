@@ -7,6 +7,10 @@ class C2:
     if True:
         def __str__(self):
             return ''
+#: N807
+if True:
+    def __bad__():
+        pass
 #: Okay
 class C3:
     try:
