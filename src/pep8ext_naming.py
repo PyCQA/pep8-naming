@@ -225,6 +225,8 @@ class ClassNameCheck(BaseASTCheck):
     N801 = "class name '{name}' should use CapWords convention"
 
     def visit_classdef(self, node, parents, ignore=None):
+        if ignore and node.name in ignore:
+            return
         if not self.check(node.name):
             yield self.err(node, 'N801', node.name)
 
