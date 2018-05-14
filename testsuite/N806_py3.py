@@ -4,7 +4,7 @@ VAR1, *VAR2, VAR3 = 1, 2, 3
 #: Okay
 [VAR1, *VAR2, VAR3] = (1, 2, 3)
 #: N806
-def extended_unpacking_ok():
+def extended_unpacking_not_ok():
     Var1, *Var2, Var3 = 1, 2, 3
 #: N806
 def extended_unpacking_not_ok():
