@@ -18,13 +18,14 @@ LOWERCASE_REGEX = re.compile(r'[_a-z][_a-z0-9]*$')
 UPPERCASE_REGEX = re.compile(r'[_A-Z][_A-Z0-9]*$')
 MIXEDCASE_REGEX = re.compile(r'_?[A-Z][a-zA-Z0-9]*$')
 
+PY2 = sys.version_info[0] == 2
 
 # Node types which may contain class methods
 METHOD_CONTAINER_NODES = {ast.If, ast.While, ast.For, ast.With} | (
-    {ast.TryExcept, ast.TryFinally} if sys.version_info[0] == 2 else {ast.Try})
+    {ast.TryExcept, ast.TryFinally} if PY2 else {ast.Try})
 
 
-if sys.version_info[0] < 3:
+if PY2:
     def _unpack_args(args):
         ret = []
         for arg in args:
@@ -356,16 +357,36 @@ class VariablesInFunctionCheck(BaseASTCheck):
                 break
         else:
             return
+        if isinstance(node.value, ast.Call):
+            if isinstance(node.value.func, ast.Attribute):
+                if node.value.func.attr == 'namedtuple':
+                    return
+            elif isinstance(node.value.func, ast.Name):
+                if node.value.func.id == 'namedtuple':
+                    return
         for target in node.targets:
-            name = isinstance(target, ast.Name) and target.id
-            if not name or name in parent_func.global_names:
-                return
-            if not self.check(name) and name[:1] != '_':
-                if isinstance(node.value, ast.Call):
-                    if isinstance(node.value.func, ast.Attribute):
-                        if node.value.func.attr == 'namedtuple':
-                            return
-                    elif isinstance(node.value.func, ast.Name):
-                        if node.value.func.id == 'namedtuple':
-                            return
+            for name in _extract_names(target):
+                if name in parent_func.global_names:
+                    continue
+                if self.check(name) or name[:1] == '_':
+                    continue
                 yield self.err(target, 'N806', name)
+
+
+def _extract_names(assignment_target):
+    """Return assignment_target target ids."""
+    target_type = type(assignment_target)
+    if target_type is ast.Name:
+        yield assignment_target.id
+        return
+    if target_type in (ast.Tuple, ast.List):
+        for element in assignment_target.elts:
+            element_type = type(element)
+            if element_type is ast.Name:
+                yield element.id
+            elif element_type in (ast.Tuple, ast.List):
+                for n in _extract_names(element):
+                    yield n
+            elif not PY2 and element_type is ast.Starred:  # PEP 3132
+                for n in _extract_names(element.value):
+                    yield n

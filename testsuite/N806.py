@@ -46,3 +46,24 @@ def bad():
     # Currently don't support aliased imports of namedtuple
     from collections import namedtuple as nt
     Thing = nt('Thing', 'a b c')
+
+#: N806
+def unpacking_into_tuple():
+    Var1, Var2 = range(2)
+#: Okay
+def unpacking_into_tuple():
+    var1, var2 = range(2)
+#: N806
+def unpacking_into_list():
+    [Var1, Var2] = range(2)
+#: Okay
+def unpacking_into_list():
+    [var1, var2] = range(2)
+#: Okay
+a, [b, c] = [1, [2, 3]]
+#: N806
+def recursive_unpack():
+    a, [bB, c] = [1, [2, 3]]
+#: Okay
+def assingnment_to_attribute():
+    a.b = 1
