@@ -19,6 +19,11 @@ UPPERCASE_REGEX = re.compile(r'[_A-Z][_A-Z0-9]*$')
 MIXEDCASE_REGEX = re.compile(r'_?[A-Z][a-zA-Z0-9]*$')
 
 
+# Node types which may contain class methods
+METHOD_CONTAINER_NODES = {ast.If, ast.While, ast.For, ast.With} | (
+    {ast.TryExcept, ast.TryFinally} if sys.version_info[0] == 2 else {ast.Try})
+
+
 if sys.version_info[0] < 3:
     def _unpack_args(args):
         ret = []
@@ -184,9 +189,15 @@ class NamingChecker(object):
         # If this class inherits from `type`, it's a metaclass, and we'll
         # consider all of it's methods to be classmethods.
         ismetaclass = any(name for name in cls_bases if name.id == 'type')
+        self.set_function_nodes_types(
+            iter_child_nodes(cls_node), ismetaclass, late_decoration)
 
+    def set_function_nodes_types(self, nodes, ismetaclass, late_decoration):
         # iterate over all functions and tag them
-        for node in iter_child_nodes(cls_node):
+        for node in nodes:
+            if type(node) in METHOD_CONTAINER_NODES:
+                self.set_function_nodes_types(
+                    iter_child_nodes(node), ismetaclass, late_decoration)
             if not isinstance(node, ast.FunctionDef):
                 continue
             node.function_type = _FunctionType.METHOD
