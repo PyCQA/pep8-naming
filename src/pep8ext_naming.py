@@ -377,6 +377,10 @@ class VariablesInFunctionCheck(BaseASTCheck):
                 yield error
 
     def visit_with(self, node, parents, ignore):
+        if PY2:
+            for error in self._find_errors(node.optional_vars, parents):
+                yield error
+            return
         for item in node.items:
             for error in self._find_errors(item.optional_vars, parents):
                 yield error
