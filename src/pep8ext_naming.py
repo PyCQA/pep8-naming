@@ -349,7 +349,7 @@ class VariablesInFunctionCheck(BaseASTCheck):
     check = LOWERCASE_REGEX.match
     N806 = "variable '{name}' in function should be lowercase"
 
-    def visit_assign(self, node, parents, ignore=None):
+    def _find_errors(self, assignment_target, parents):
         for parent_func in reversed(parents):
             if isinstance(parent_func, ast.ClassDef):
                 return
@@ -357,6 +357,14 @@ class VariablesInFunctionCheck(BaseASTCheck):
                 break
         else:
             return
+        for name in _extract_names(assignment_target):
+            if name in parent_func.global_names:
+                continue
+            if self.check(name) or name[:1] == '_':
+                continue
+            yield self.err(assignment_target, 'N806', name)
+
+    def visit_assign(self, node, parents, ignore=None):
         if isinstance(node.value, ast.Call):
             if isinstance(node.value.func, ast.Attribute):
                 if node.value.func.attr == 'namedtuple':
@@ -365,16 +373,21 @@ class VariablesInFunctionCheck(BaseASTCheck):
                 if node.value.func.id == 'namedtuple':
                     return
         for target in node.targets:
-            for name in _extract_names(target):
-                if name in parent_func.global_names:
-                    continue
-                if self.check(name) or name[:1] == '_':
-                    continue
-                yield self.err(target, 'N806', name)
+            for error in self._find_errors(target, parents):
+                yield error
+
+    def visit_with(self, node, parents, ignore):
+        if PY2:
+            for error in self._find_errors(node.optional_vars, parents):
+                yield error
+            return
+        for item in node.items:
+            for error in self._find_errors(item.optional_vars, parents):
+                yield error
 
 
 def _extract_names(assignment_target):
-    """Return assignment_target target ids."""
+    """Yield assignment_target ids."""
     target_type = type(assignment_target)
     if target_type is ast.Name:
         yield assignment_target.id
