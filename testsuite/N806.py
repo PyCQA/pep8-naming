@@ -67,3 +67,36 @@ def recursive_unpack():
 #: Okay
 def assingnment_to_attribute():
     a.b = 1
+#: N806
+def f():
+    with Foo(), Bar() as Bad:
+        pass
+#: Okay
+def f():
+    with FOO() as foo, bar() as bar:
+        pass
+#: Okay
+def f():
+    with suppress(E):
+        pass
+    with contextlib.suppress(E):
+        pass
+#: Okay
+with Test() as bar:
+    pass
+#: N806
+def f():
+    with Test() as BAD:
+        pass
+#: Okay
+def f():
+    with C() as [a, b, c]:
+        pass
+#: N806
+def f():
+    with C() as [a, Bad, c]:
+        pass
+#: N806
+def f():
+    with C() as (a, b, baD):
+        pass
