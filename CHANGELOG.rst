@@ -1,11 +1,27 @@
 Changes
 =======
 
+0.7.0 - 2018-05-17
+------------------
+
+* Detect N806 in ``with ... as ...:`` statements.
+
+* Detect N806 in multiple assignment statements, e.g., ``Foo, Bar =
+  unpacking``.
+
+* Allow class names to be properly ignored.
+
+* Remove spurious 'xxx' from error message
+
+* Detect N807 within conditional statements.
+
+
 0.6.1 - 2018-05-06
 ------------------
 
 * Fix N804 check for ``cls`` used in metaclass methods (See also
   https://github.com/PyCQA/pep8-naming/issues/53)
+
 
 0.6.0 - 2018-05-04
 ------------------
