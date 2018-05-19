@@ -385,6 +385,15 @@ class VariablesInFunctionCheck(BaseASTCheck):
             for error in self._find_errors(item.optional_vars, parents):
                 yield error
 
+    def visit_for(self, node, parents, ignore):
+        for error in self._find_errors(node.target, parents):
+            yield error
+
+    def visit_excepthandler(self, node, parents, ignore):
+        if node.name:
+            for error in self._find_errors(node, parents):
+                yield error
+
 
 def _extract_names(assignment_target):
     """Yield assignment_target ids."""
@@ -403,3 +412,10 @@ def _extract_names(assignment_target):
             elif not PY2 and element_type is ast.Starred:  # PEP 3132
                 for n in _extract_names(element.value):
                     yield n
+        return
+    if target_type is ast.ExceptHandler:
+        if PY2:
+            yield assignment_target.name.id
+        else:
+            yield assignment_target.name
+        return

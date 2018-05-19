@@ -100,3 +100,51 @@ def f():
 def f():
     with C() as (a, b, baD):
         pass
+#: Okay
+def f():
+    for i in iterator:
+        pass
+#: N806
+def f():
+    for Bad in iterator:
+        pass
+#: Okay
+def f():
+    for a, b in enumerate(iterator):
+        pass
+#: N806
+def f():
+    for index, ITEM in enumerate(iterator):
+        pass
+#: N806
+def f():
+    try:
+        f()
+    except Exception as Bad:
+        pass
+#: Okay
+def f():
+    try:
+        f()
+    except Exception as good:
+        pass
+#: Okay
+def f():
+    try:
+        f()
+    except:
+        pass
+#: Okay
+def f():
+    try:
+        f()
+    except good:
+        pass
+#: N806
+def f():
+    try:
+        f()
+    except RuntimeError as good:
+        pass
+    except IndexError as BAD:
+        pass
