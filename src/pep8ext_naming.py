@@ -321,10 +321,10 @@ class ImportAsCheck(BaseASTCheck):
     """
     check_lower = LOWERCASE_REGEX.match
     check_upper = UPPERCASE_REGEX.match
-    N811 = "constant '{name}' imported as non constant"
-    N812 = "lowercase '{name}' imported as non lowercase"
-    N813 = "camelcase '{name}' imported as lowercase"
-    N814 = "camelcase '{name}' imported as constant"
+    N811 = "constant '{name}' imported as non constant '{asname}'"
+    N812 = "lowercase '{name}' imported as non lowercase '{asname}'"
+    N813 = "camelcase '{name}' imported as lowercase '{asname}'"
+    N814 = "camelcase '{name}' imported as constant '{asname}'"
 
     def visit_importfrom(self, node, parents, ignore=None):
         for name in node.names:
@@ -332,14 +332,14 @@ class ImportAsCheck(BaseASTCheck):
                 continue
             if self.check_upper(name.name):
                 if not self.check_upper(name.asname):
-                    yield self.err(node, 'N811', name=name.name)
+                    yield self.err(node, 'N811', **vars(name))
             elif self.check_lower(name.name):
                 if not self.check_lower(name.asname):
-                    yield self.err(node, 'N812', name=name.name)
+                    yield self.err(node, 'N812', **vars(name))
             elif self.check_lower(name.asname):
-                yield self.err(node, 'N813', name=name.name)
+                yield self.err(node, 'N813', **vars(name))
             elif self.check_upper(name.asname):
-                yield self.err(node, 'N814', name=name.name)
+                yield self.err(node, 'N814', **vars(name))
 
 
 class VariablesInFunctionCheck(BaseASTCheck):
