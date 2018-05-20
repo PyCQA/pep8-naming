@@ -52,7 +52,7 @@ class _ASTCheckMeta(type):
             cls._checks = []
 
 
-def _err(self, node, code, name=None):
+def _err(self, node, code, **kwargs):
     lineno, col_offset = node.lineno, node.col_offset
     if isinstance(node, ast.ClassDef):
         lineno += len(node.decorator_list)
@@ -61,8 +61,8 @@ def _err(self, node, code, name=None):
         lineno += len(node.decorator_list)
         col_offset += 4
     code_str = getattr(self, code)
-    if name is not None:
-        code_str = code_str.format(name=name)
+    if kwargs:
+        code_str = code_str.format(**kwargs)
     return (lineno, col_offset, '%s %s' % (code, code_str), self)
 
 
@@ -240,7 +240,7 @@ class ClassNameCheck(BaseASTCheck):
         if ignore and node.name in ignore:
             return
         if not self.check(node.name):
-            yield self.err(node, 'N801', node.name)
+            yield self.err(node, 'N801', name=node.name)
 
 
 class FunctionNameCheck(BaseASTCheck):
@@ -263,9 +263,9 @@ class FunctionNameCheck(BaseASTCheck):
         if ignore and name in ignore:
             return
         if not self.check(name):
-            yield self.err(node, 'N802', name)
+            yield self.err(node, 'N802', name=name)
         if function_type == 'function' and '__' in (name[:2], name[-2:]):
-            yield self.err(node, 'N807', name)
+            yield self.err(node, 'N807', name=name)
 
 
 class FunctionArgNamesCheck(BaseASTCheck):
@@ -289,13 +289,13 @@ class FunctionArgNamesCheck(BaseASTCheck):
         kwarg = arg_name(node.args.kwarg)
         if kwarg is not None:
             if not self.check(kwarg):
-                yield self.err(node, 'N803', kwarg)
+                yield self.err(node, 'N803', name=kwarg)
                 return
 
         vararg = arg_name(node.args.vararg)
         if vararg is not None:
             if not self.check(vararg):
-                yield self.err(node, 'N803', vararg)
+                yield self.err(node, 'N803', name=vararg)
                 return
 
         arg_names = get_arg_names(node)
@@ -311,7 +311,7 @@ class FunctionArgNamesCheck(BaseASTCheck):
                 yield self.err(node, 'N804')
         for arg in arg_names:
             if not self.check(arg):
-                yield self.err(node, 'N803', arg)
+                yield self.err(node, 'N803', name=arg)
                 return
 
 
@@ -321,25 +321,28 @@ class ImportAsCheck(BaseASTCheck):
     """
     check_lower = LOWERCASE_REGEX.match
     check_upper = UPPERCASE_REGEX.match
-    N811 = "constant '{name}' imported as non constant"
-    N812 = "lowercase '{name}' imported as non lowercase"
-    N813 = "camelcase '{name}' imported as lowercase"
-    N814 = "camelcase '{name}' imported as constant"
+    N811 = "constant '{name}' imported as non constant '{asname}'"
+    N812 = "lowercase '{name}' imported as non lowercase '{asname}'"
+    N813 = "camelcase '{name}' imported as lowercase '{asname}'"
+    N814 = "camelcase '{name}' imported as constant '{asname}'"
 
     def visit_importfrom(self, node, parents, ignore=None):
         for name in node.names:
             if not name.asname:
                 continue
-            if self.check_upper(name.name):
-                if not self.check_upper(name.asname):
-                    yield self.err(node, 'N811', name.asname)
-            elif self.check_lower(name.name):
-                if not self.check_lower(name.asname):
-                    yield self.err(node, 'N812', name.asname)
-            elif self.check_lower(name.asname):
-                yield self.err(node, 'N813', name.asname)
-            elif self.check_upper(name.asname):
-                yield self.err(node, 'N814', name.asname)
+            asname = name.asname
+            original_name = name.name
+            err_kwargs = {'name': original_name, 'asname': asname}
+            if self.check_upper(original_name):
+                if not self.check_upper(asname):
+                    yield self.err(node, 'N811', **err_kwargs)
+            elif self.check_lower(original_name):
+                if not self.check_lower(asname):
+                    yield self.err(node, 'N812', **err_kwargs)
+            elif self.check_lower(asname):
+                yield self.err(node, 'N813', **err_kwargs)
+            elif self.check_upper(asname):
+                yield self.err(node, 'N814', **err_kwargs)
 
 
 class VariablesInFunctionCheck(BaseASTCheck):
@@ -362,7 +365,7 @@ class VariablesInFunctionCheck(BaseASTCheck):
                 continue
             if self.check(name) or name[:1] == '_':
                 continue
-            yield self.err(assignment_target, 'N806', name)
+            yield self.err(assignment_target, 'N806', name=name)
 
     def visit_assign(self, node, parents, ignore=None):
         if isinstance(node.value, ast.Call):
