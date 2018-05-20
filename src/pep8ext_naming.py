@@ -332,14 +332,14 @@ class ImportAsCheck(BaseASTCheck):
                 continue
             if self.check_upper(name.name):
                 if not self.check_upper(name.asname):
-                    yield self.err(node, 'N811', name.asname)
+                    yield self.err(node, 'N811', name.name)
             elif self.check_lower(name.name):
                 if not self.check_lower(name.asname):
-                    yield self.err(node, 'N812', name.asname)
+                    yield self.err(node, 'N812', name.name)
             elif self.check_lower(name.asname):
-                yield self.err(node, 'N813', name.asname)
+                yield self.err(node, 'N813', name.name)
             elif self.check_upper(name.asname):
-                yield self.err(node, 'N814', name.asname)
+                yield self.err(node, 'N814', name.name)
 
 
 class VariablesInFunctionCheck(BaseASTCheck):
