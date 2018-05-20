@@ -330,16 +330,19 @@ class ImportAsCheck(BaseASTCheck):
         for name in node.names:
             if not name.asname:
                 continue
-            if self.check_upper(name.name):
-                if not self.check_upper(name.asname):
-                    yield self.err(node, 'N811', **vars(name))
-            elif self.check_lower(name.name):
-                if not self.check_lower(name.asname):
-                    yield self.err(node, 'N812', **vars(name))
-            elif self.check_lower(name.asname):
-                yield self.err(node, 'N813', **vars(name))
-            elif self.check_upper(name.asname):
-                yield self.err(node, 'N814', **vars(name))
+            asname = name.asname
+            original_name = name.name
+            err_kwargs = {'name': original_name, 'asname': asname}
+            if self.check_upper(original_name):
+                if not self.check_upper(asname):
+                    yield self.err(node, 'N811', **err_kwargs)
+            elif self.check_lower(original_name):
+                if not self.check_lower(asname):
+                    yield self.err(node, 'N812', **err_kwargs)
+            elif self.check_lower(asname):
+                yield self.err(node, 'N813', **err_kwargs)
+            elif self.check_upper(asname):
+                yield self.err(node, 'N814', **err_kwargs)
 
 
 class VariablesInFunctionCheck(BaseASTCheck):
