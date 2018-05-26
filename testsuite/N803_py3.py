@@ -11,3 +11,21 @@ def compare(a, b, *VERY, bad=None):
 #: N803
 def compare(a, b, *ok, fine=None, **BAD):
     pass
+#: Okay
+def foo(α, ß, γ):
+    pass
+#: Okay
+def foo(α, ß=''):
+    pass
+#: Okay
+def foo(**κ):
+    pass
+#: Okay
+def foo(*α):
+    pass
+#: Okay
+def foo(**κ2):
+    pass
+#: Okay
+def foo(*α2):
+    pass

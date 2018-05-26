@@ -1,3 +1,4 @@
+import io
 import optparse
 import os
 import re
@@ -20,7 +21,8 @@ def main():
     test_count = 0
     errors = 0
     for filename in os.listdir('testsuite'):
-        with open(os.path.join('testsuite', filename)) as fd:
+        filepath = os.path.join('testsuite', filename)
+        with io.open(filepath, encoding='utf8') as fd:
             lines = list(fd)
             if not is_test_allowed(lines):
                 continue
