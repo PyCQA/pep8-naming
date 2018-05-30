@@ -2,6 +2,7 @@
 """Checker of PEP-8 Naming Conventions."""
 import sys
 from collections import deque
+from functools import partial
 
 from flake8_polyfill import options
 
@@ -336,26 +337,28 @@ class ImportAsCheck(BaseASTCheck):
                 yield self.err(node, 'N814', **err_kwargs)
 
 
-class VariablesInFunctionCheck(BaseASTCheck):
+class VariablesCheck(BaseASTCheck):
     """
     Local variables in functions should be lowercase
     """
     N806 = "variable '{name}' in function should be lowercase"
+    N815 = "variable '{name}' in class scope should not be mixedCase"
+    N816 = "variable '{name}' in global scope should not be mixedCase"
 
     def _find_errors(self, assignment_target, parents):
         for parent_func in reversed(parents):
             if isinstance(parent_func, ast.ClassDef):
-                return
+                checker = self.class_variable_check
+                break
             if isinstance(parent_func, ast.FunctionDef):
+                checker = partial(self.function_variable_check, parent_func)
                 break
         else:
-            return
+            checker = self.global_variable_check
         for name in _extract_names(assignment_target):
-            if name in parent_func.global_names:
-                continue
-            if name.islower() or name == '_':
-                continue
-            yield self.err(assignment_target, 'N806', name=name)
+            error_code = checker(name)
+            if error_code:
+                yield self.err(assignment_target, error_code, name=name)
 
     def visit_assign(self, node, parents, ignore=None):
         if isinstance(node.value, ast.Call):
@@ -387,6 +390,24 @@ class VariablesInFunctionCheck(BaseASTCheck):
             for error in self._find_errors(node, parents):
                 yield error
 
+    @staticmethod
+    def global_variable_check(name):
+        if is_mixed_case(name):
+            return 'N816'
+
+    @staticmethod
+    def class_variable_check(name):
+        if is_mixed_case(name):
+            return 'N815'
+
+    @staticmethod
+    def function_variable_check(func, var_name):
+        if var_name in func.global_names:
+            return None
+        if var_name.islower() or var_name == '_':
+            return None
+        return 'N806'
+
 
 def _extract_names(assignment_target):
     """Yield assignment_target ids."""
@@ -412,3 +433,10 @@ def _extract_names(assignment_target):
         else:
             yield assignment_target.name
         return
+
+
+def is_mixed_case(name):
+    stripped_name = name.strip('_')
+    head = stripped_name[:1]
+    tail = stripped_name[1:]
+    return head.islower() and tail and not (tail.islower() or tail.isdigit())
