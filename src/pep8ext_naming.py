@@ -436,6 +436,4 @@ def _extract_names(assignment_target):
 
 
 def is_mixed_case(name):
-    stripped_name = name.strip('_')
-    head_is_lower = stripped_name[:1].islower()
-    return head_is_lower and any(map(str.isupper, stripped_name[1:]))
+    return name.lstrip('_')[:1].islower() and name.lower() != name
