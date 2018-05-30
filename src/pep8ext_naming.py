@@ -2,6 +2,7 @@
 """Checker of PEP-8 Naming Conventions."""
 import sys
 from collections import deque
+from functools import partial
 
 from flake8_polyfill import options
 
@@ -347,18 +348,15 @@ class VariablesCheck(BaseASTCheck):
     def _find_errors(self, assignment_target, parents):
         for parent_func in reversed(parents):
             if isinstance(parent_func, ast.ClassDef):
-                checker = class_variable_check
-                checker_args = ()
+                checker = self.class_variable_check
                 break
             if isinstance(parent_func, ast.FunctionDef):
-                checker = function_variable_check
-                checker_args = parent_func.global_names,
+                checker = partial(self.function_variable_check, parent_func)
                 break
         else:
-            checker = global_variable_check
-            checker_args = ()
+            checker = self.global_variable_check
         for name in _extract_names(assignment_target):
-            error_code = checker(name, *checker_args)
+            error_code = checker(name)
             if error_code:
                 yield self.err(assignment_target, error_code, name=name)
 
@@ -391,6 +389,24 @@ class VariablesCheck(BaseASTCheck):
         if node.name:
             for error in self._find_errors(node, parents):
                 yield error
+
+    @staticmethod
+    def global_variable_check(name):
+        if is_mixed_case(name):
+            return 'N816'
+
+    @staticmethod
+    def class_variable_check(name):
+        if is_mixed_case(name):
+            return 'N815'
+
+    @staticmethod
+    def function_variable_check(func, var_name):
+        if var_name in func.global_names:
+            return None
+        if var_name.islower() or var_name == '_':
+            return None
+        return 'N806'
 
 
 def _extract_names(assignment_target):
@@ -425,21 +441,3 @@ def is_mixed_case(name):
     tail = stripped_name[1:]
     if head.islower() and tail and not tail.islower() and not tail.isdigit():
         return True
-
-
-def global_variable_check(name):
-    if is_mixed_case(name):
-        return 'N816'
-
-
-def class_variable_check(name):
-    if is_mixed_case(name):
-        return 'N815'
-
-
-def function_variable_check(name, global_names):
-    if name in global_names:
-        return None
-    if name.islower() or name == '_':
-        return None
-    return 'N806'
