@@ -90,7 +90,7 @@ class NamingChecker(object):
     """Checker of PEP-8 Naming Conventions."""
     name = 'naming'
     version = __version__
-    ignore_names = ['setUp', 'tearDown', 'setUpClass', 'tearDownClass']
+    ignore_names = ['setUp', 'tearDown', 'setUpClass', 'tearDownClass', 'setUpTestData']
     decorator_to_type = _build_decorator_to_type(
         _default_classmethod_decorators, _default_staticmethod_decorators)
 
