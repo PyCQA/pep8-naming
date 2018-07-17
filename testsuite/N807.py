@@ -24,7 +24,7 @@ class C3:
 #: N807
 def __bad():
     pass
-#: N807
+#: N807:1:5
 def bad__():
     pass
 #: N807

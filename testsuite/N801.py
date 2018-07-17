@@ -9,6 +9,6 @@ class Good(object):
 #: Okay
 class VeryGood(object):
     pass
-#: N801
+#: N801:1:7
 class _:
     pass

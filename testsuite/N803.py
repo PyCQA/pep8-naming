@@ -37,10 +37,10 @@ def b12(*BAD):
 #: N803
 def b13(BAD, *VERYBAD, **EXTRABAD):
     pass
-#: N803
+#: N803:1:9
 def b14(BAD):
     pass
-#: N803
+#: N803:2:24
 class Test(object):
     def __init__(self, BAD):
         pass

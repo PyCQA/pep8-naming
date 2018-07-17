@@ -28,15 +28,18 @@ if PY2:
             if isinstance(arg, ast.Tuple):
                 ret.extend(_unpack_args(arg.elts))
             else:
-                ret.append(arg.id)
+                ret.append((arg, arg.id))
         return ret
 
-    def get_arg_names(node):
+    def get_arg_name_tuples(node):
         return _unpack_args(node.args.args)
+
+
 else:
-    def get_arg_names(node):
-        pos_args = [arg.arg for arg in node.args.args]
-        kw_only = [arg.arg for arg in node.args.kwonlyargs]
+    def get_arg_name_tuples(node):
+        args = node.args
+        pos_args = [(arg, arg.arg) for arg in args.args]
+        kw_only = [(arg, arg.arg) for arg in args.kwonlyargs]
         return pos_args + kw_only
 
 
@@ -59,7 +62,7 @@ def _err(self, node, code, **kwargs):
     code_str = getattr(self, code)
     if kwargs:
         code_str = code_str.format(**kwargs)
-    return (lineno, col_offset, '%s %s' % (code, code_str), self)
+    return lineno, col_offset + 1, '%s %s' % (code, code_str), self
 
 
 BaseASTCheck = _ASTCheckMeta('BaseASTCheck', (object,),
@@ -278,34 +281,33 @@ class FunctionArgNamesCheck(BaseASTCheck):
     def visit_functiondef(self, node, parents, ignore=None):
 
         def arg_name(arg):
-            return getattr(arg, 'arg', arg)
+            try:
+                return arg, arg.arg
+            except AttributeError:  # PY2
+                return node, arg
 
-        kwarg = arg_name(node.args.kwarg)
-        if kwarg is not None:
-            if not kwarg.islower():
-                yield self.err(node, 'N803', name=kwarg)
-                return
+        for arg, name in arg_name(node.args.vararg), arg_name(node.args.kwarg):
+            if name is not None:
+                if not name.islower():
+                    yield self.err(arg, 'N803', name=name)
+                    return
 
-        vararg = arg_name(node.args.vararg)
-        if vararg is not None:
-            if not vararg.islower():
-                yield self.err(node, 'N803', name=vararg)
-                return
 
-        arg_names = get_arg_names(node)
-        if not arg_names:
+        arg_name_tuples = get_arg_name_tuples(node)
+        if not arg_name_tuples:
             return
+        arg0, name0 = arg_name_tuples[0]
         function_type = getattr(node, 'function_type', 'function')
 
         if function_type == _FunctionType.METHOD:
-            if arg_names[0] != 'self':
-                yield self.err(node, 'N805')
+            if name0 != 'self':
+                yield self.err(arg0, 'N805')
         elif function_type == _FunctionType.CLASSMETHOD:
-            if arg_names[0] != 'cls':
-                yield self.err(node, 'N804')
-        for arg in arg_names:
-            if not arg.islower():
-                yield self.err(node, 'N803', name=arg)
+            if name0 != 'cls':
+                yield self.err(arg0, 'N804')
+        for arg, name in arg_name_tuples:
+            if not name.islower():
+                yield self.err(arg, 'N803', name=name)
                 return
 
 

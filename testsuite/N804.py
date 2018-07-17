@@ -1,4 +1,4 @@
-#: N804
+#: N804:7:13
 class Foo(object):
     @classmethod
     def mmm(cls, ads):
@@ -14,7 +14,7 @@ class Foo(object):
 
     def __init_subclass(self, ads):
         pass
-#: N804(--classmethod-decorators=clazzy,cool)
+#: N804:3:14(--classmethod-decorators=clazzy,cool)
 class NewClassIsRequired(object):
     @cool
     def test(self, sy):
