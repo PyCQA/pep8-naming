@@ -64,3 +64,26 @@ These error codes are emitted:
 +------+-------------------------------------------------------+
 | N816 | mixedCase variable in global scope                    |
 +------+-------------------------------------------------------+
+
+Options
+-------
+
+The following flake8 options are added:
+
+--ignore-names              Ignore errors for specific variable names.
+
+                            Currently, this option can only be used for N802 errors (`#43 <https://github.com/PyCQA/pep8-naming/issues/43>`_).
+
+                            Default: ``setUp,tearDown,setUpClass,tearDownClass,setUpTestData``.
+
+--classmethod-decorators    List of method decorators pep8-naming plugin should consider class method.
+
+                            Used to prevent false N804 errors.
+
+                            Default: ``classmethod``.
+
+--staticmethod-decorators   List of method decorators pep8-naming plugin should consider static method.
+
+                            Used to prevent false N805 errors.
+
+                            Default: ``staticmethod``.
