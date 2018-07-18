@@ -10,7 +10,7 @@ class C:
 #: Okay
 class C:
     _1 = 0
-#: N815
+#: N815:2:5
 class C:
     mixedCase = 0
 #: N815

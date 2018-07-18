@@ -11,7 +11,7 @@ class ΓγΓ6:
 #: Okay
 class _Γ:
     pass
-#: N801
+#: N801:1:7
 class γ:
     pass
 #: N801

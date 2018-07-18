@@ -13,7 +13,12 @@ IS_PY3 = sys.version_info[0] == 3
 IS_PY3_TEST = re.compile(r"^#\s*python3\s*only")
 IS_PY2_TEST = re.compile(r"^#\s*python2\s*only")
 
-TESTCASE_RE = re.compile("^#: (?P<code>\w+)(\((?P<options>.+)\))?$")
+TESTCASE_RE = re.compile(
+    r'#: '
+    r'(?P<code>\w+:?\d*:?\d*)'
+    r'(\((?P<options>.+)\))?'
+    r'$'
+)
 
 
 def main():
@@ -86,21 +91,24 @@ def parse_options(checker, options):
 
 
 def test_file(filename, lines, code, options):
+    if code is None:  # Invalid test case
+        return 0
     tree = compile(''.join(lines), '', 'exec', PyCF_ONLY_AST)
     checker = pep8ext_naming.NamingChecker(tree, filename)
     parse_options(checker, options)
+    error_format = (
+        '{0}:{lineno}:{col_offset}' if ':' in code else '{0}').format
 
-    found_errors = []
+    found_errors = set()
     for lineno, col_offset, msg, instance in checker.run():
-        found_errors.append(msg.split()[0])
+        found_errors.add(error_format(msg.split()[0], **locals()))
 
-    if code is None:  # Invalid test case
-        return 0
     if not found_errors and code == 'Okay':  # Expected PASS
         return 0
     if code in found_errors:  # Expected FAIL
         return 0
-    print("ERROR: %s not in %s" % (code, filename))
+    print("ERROR: %s not in %s. found_errors: %s"
+          % (code, filename, found_errors))
     return 1
 
 

@@ -104,7 +104,7 @@ def f():
 def f():
     for i in iterator:
         pass
-#: N806
+#: N806:2:9
 def f():
     for Bad in iterator:
         pass

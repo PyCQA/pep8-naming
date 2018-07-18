@@ -16,7 +16,7 @@ def go_od_():
 #: Okay
 def _go_od_():
     pass
-#: N802
+#: N802:1:5
 def NotOK():
     pass
 #: Okay

@@ -1,3 +1,13 @@
+#: Okay
+class C:
+    def __init__(*args, **kwargs):
+        pass
+#: N805:4:11
+class C:
+    @decorator(
+        'a')
+    def m(cls, k='w'):  # noqa: N805
+        pass
 #: N805
 class Foo(object):
     def good(self, ads):
