@@ -238,7 +238,8 @@ class ClassNameCheck(BaseASTCheck):
         name = node.name
         if ignore and name in ignore:
             return
-        if not name.lstrip('_')[:1].isupper():
+        name = name.strip('_')
+        if not name[:1].isupper() or '_' in name:
             yield self.err(node, 'N801', name=name)
 
 
