@@ -35,3 +35,9 @@ class ClassName(object):
     def method(self):
         def __bad():
             pass
+#: Okay
+def __dir__():
+    pass
+#: Okay
+def __getattr__(name):
+    pass

@@ -261,6 +261,8 @@ class FunctionNameCheck(BaseASTCheck):
         name = node.name
         if ignore and name in ignore:
             return
+        if name in ('__dir__', '__getattr__'):
+            return
         if not name.islower() and name != '_':
             yield self.err(node, 'N802', name=name)
         if function_type == 'function' and '__' in (name[:2], name[-2:]):
