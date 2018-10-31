@@ -14,12 +14,21 @@ except ImportError:
 
 __version__ = '0.7.0'
 
-PY2 = sys.version_info[0] == 2
+PYTHON_VERSION = sys.version_info[:3]
+PY2 = PYTHON_VERSION[0] == 2
 
 # Node types which may contain class methods
-METHOD_CONTAINER_NODES = {ast.If, ast.While, ast.For, ast.With} | (
-    {ast.TryExcept, ast.TryFinally} if PY2 else {ast.Try})
+METHOD_CONTAINER_NODES = {ast.If, ast.While, ast.For, ast.With}
+FUNC_NODES = (ast.FunctionDef,)
 
+if PY2:
+    METHOD_CONTAINER_NODES |= {ast.TryExcept, ast.TryFinally}
+else:
+    METHOD_CONTAINER_NODES |= {ast.Try}
+
+if PYTHON_VERSION > (3, 5):
+    FUNC_NODES += (ast.AsyncFunctionDef,)
+    METHOD_CONTAINER_NODES |= {ast.AsyncWith, ast.AsyncFor}
 
 if PY2:
     def _unpack_args(args):
@@ -33,8 +42,6 @@ if PY2:
 
     def get_arg_name_tuples(node):
         return _unpack_args(node.args.args)
-
-
 else:
     def get_arg_name_tuples(node):
         args = node.args
@@ -56,7 +63,7 @@ def _err(self, node, code, **kwargs):
     if isinstance(node, ast.ClassDef):
         lineno += len(node.decorator_list)
         col_offset += 6
-    elif isinstance(node, ast.FunctionDef):
+    elif isinstance(node, FUNC_NODES):
         lineno += len(node.decorator_list)
         col_offset += 4
     code_str = getattr(self, code)
@@ -155,7 +162,7 @@ class NamingChecker(object):
     def visit_node(self, node):
         if isinstance(node, ast.ClassDef):
             self.tag_class_functions(node)
-        elif isinstance(node, ast.FunctionDef):
+        elif isinstance(node, FUNC_NODES):
             self.find_global_defs(node)
 
         method = 'visit_' + node.__class__.__name__.lower()
@@ -198,7 +205,7 @@ class NamingChecker(object):
             if type(node) in METHOD_CONTAINER_NODES:
                 self.set_function_nodes_types(
                     iter_child_nodes(node), ismetaclass, late_decoration)
-            if not isinstance(node, ast.FunctionDef):
+            if not isinstance(node, FUNC_NODES):
                 continue
             node.function_type = _FunctionType.METHOD
             if node.name in ('__new__', '__init_subclass__') or ismetaclass:
@@ -221,7 +228,7 @@ class NamingChecker(object):
             if isinstance(node, ast.Global):
                 global_names.update(node.names)
 
-            if not isinstance(node, (ast.FunctionDef, ast.ClassDef)):
+            if not isinstance(node, (ast.ClassDef,) + FUNC_NODES):
                 nodes_to_check.extend(iter_child_nodes(node))
         func_def_node.global_names = global_names
 
@@ -268,6 +275,8 @@ class FunctionNameCheck(BaseASTCheck):
         if function_type == 'function' and '__' in (name[:2], name[-2:]):
             yield self.err(node, 'N807', name=name)
 
+    visit_asyncfunctiondef = visit_functiondef
+
 
 class FunctionArgNamesCheck(BaseASTCheck):
     """
@@ -313,6 +322,8 @@ class FunctionArgNamesCheck(BaseASTCheck):
                 yield self.err(arg, 'N803', name=name)
                 return
 
+    visit_asyncfunctiondef = visit_functiondef
+
 
 class ImportAsCheck(BaseASTCheck):
     """
@@ -355,7 +366,7 @@ class VariablesCheck(BaseASTCheck):
             if isinstance(parent_func, ast.ClassDef):
                 checker = self.class_variable_check
                 break
-            if isinstance(parent_func, ast.FunctionDef):
+            if isinstance(parent_func, FUNC_NODES):
                 checker = partial(self.function_variable_check, parent_func)
                 break
         else:
@@ -386,9 +397,13 @@ class VariablesCheck(BaseASTCheck):
             for error in self._find_errors(item.optional_vars, parents):
                 yield error
 
+    visit_asyncwith = visit_with
+
     def visit_for(self, node, parents, ignore):
         for error in self._find_errors(node.target, parents):
             yield error
+
+    visit_asyncfor = visit_for
 
     def visit_excepthandler(self, node, parents, ignore):
         if node.name:

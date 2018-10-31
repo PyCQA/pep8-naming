@@ -16,7 +16,7 @@ TESTCASE_RE = re.compile(
     r'(\((?P<options>.+)\))?'
     r'$'
 )
-PYTHON_VERSION = platform.python_version()[:3]
+EVAL_LOCALS = {'python_version': platform.python_version()[:3]}
 
 
 def main():
@@ -44,7 +44,7 @@ def main():
 def is_test_allowed(lines):
     for line in lines[:3]:
         if 'python_version' in line:
-            return eval(line[1:], {}, {'python_version': PYTHON_VERSION})
+            return eval(line[1:], {}, EVAL_LOCALS)
     return True
 
 
