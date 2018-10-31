@@ -1,4 +1,4 @@
-# python3 only
+# python_version >= '3'
 #: Okay
 class C:
     def γ(self):

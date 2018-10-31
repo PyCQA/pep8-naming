@@ -1,6 +1,7 @@
 import io
 import optparse
 import os
+import platform
 import re
 import sys
 
@@ -9,16 +10,13 @@ import pep8ext_naming
 
 PyCF_ONLY_AST = 1024
 
-IS_PY3 = sys.version_info[0] == 3
-IS_PY3_TEST = re.compile(r"^#\s*python3\s*only")
-IS_PY2_TEST = re.compile(r"^#\s*python2\s*only")
-
 TESTCASE_RE = re.compile(
     r'#: '
     r'(?P<code>\w+:?\d*:?\d*)'
     r'(\((?P<options>.+)\))?'
     r'$'
 )
+PYTHON_VERSION = platform.python_version()[:3]
 
 
 def main():
@@ -44,12 +42,9 @@ def main():
 
 
 def is_test_allowed(lines):
-    if IS_PY3 and any(IS_PY2_TEST.search(line) for line in lines[:3]):
-        return False
-
-    if not IS_PY3 and any(IS_PY3_TEST.search(line) for line in lines[:3]):
-        return False
-
+    for line in lines[:3]:
+        if 'python_version' in line:
+            return eval(line[1:], {}, {'python_version': PYTHON_VERSION})
     return True
 
 
