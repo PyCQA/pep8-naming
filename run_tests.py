@@ -93,7 +93,8 @@ def parse_options(checker, options):
 def test_file(filename, lines, code, options):
     if code is None:  # Invalid test case
         return 0
-    tree = compile(''.join(lines), '', 'exec', PyCF_ONLY_AST)
+    source = ''.join(lines)
+    tree = compile(source, '', 'exec', PyCF_ONLY_AST)
     checker = pep8ext_naming.NamingChecker(tree, filename)
     parse_options(checker, options)
     error_format = (
@@ -107,8 +108,8 @@ def test_file(filename, lines, code, options):
         return 0
     if code in found_errors:  # Expected FAIL
         return 0
-    print("ERROR: %s not in %s. found_errors: %s"
-          % (code, filename, found_errors))
+    print("ERROR: %s not in %s. found_errors: %s. Source:\n%s"
+          % (code, filename, found_errors, source))
     return 1
 
 
