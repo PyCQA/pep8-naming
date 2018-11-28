@@ -1,6 +1,7 @@
 import io
 import optparse
 import os
+import platform
 import re
 import sys
 
@@ -9,16 +10,13 @@ import pep8ext_naming
 
 PyCF_ONLY_AST = 1024
 
-IS_PY3 = sys.version_info[0] == 3
-IS_PY3_TEST = re.compile(r"^#\s*python3\s*only")
-IS_PY2_TEST = re.compile(r"^#\s*python2\s*only")
-
 TESTCASE_RE = re.compile(
     r'#: '
     r'(?P<code>\w+:?\d*:?\d*)'
     r'(\((?P<options>.+)\))?'
     r'$'
 )
+EVAL_LOCALS = {'python_version': platform.python_version()[:3]}
 
 
 def main():
@@ -44,12 +42,9 @@ def main():
 
 
 def is_test_allowed(lines):
-    if IS_PY3 and any(IS_PY2_TEST.search(line) for line in lines[:3]):
-        return False
-
-    if not IS_PY3 and any(IS_PY3_TEST.search(line) for line in lines[:3]):
-        return False
-
+    for line in lines[:3]:
+        if 'python_version' in line:
+            return eval(line[1:], {}, EVAL_LOCALS)
     return True
 
 
@@ -93,7 +88,8 @@ def parse_options(checker, options):
 def test_file(filename, lines, code, options):
     if code is None:  # Invalid test case
         return 0
-    tree = compile(''.join(lines), '', 'exec', PyCF_ONLY_AST)
+    source = ''.join(lines)
+    tree = compile(source, '', 'exec', PyCF_ONLY_AST)
     checker = pep8ext_naming.NamingChecker(tree, filename)
     parse_options(checker, options)
     error_format = (
@@ -107,8 +103,8 @@ def test_file(filename, lines, code, options):
         return 0
     if code in found_errors:  # Expected FAIL
         return 0
-    print("ERROR: %s not in %s. found_errors: %s"
-          % (code, filename, found_errors))
+    print("ERROR: %s not in %s. found_errors: %s. Source:\n%s"
+          % (code, filename, found_errors, source))
     return 1
 
 

@@ -1,4 +1,4 @@
-# python2 only
+# python_version < '3'
 #: Okay
 def test(a, b, (good, verygood)):
     pass

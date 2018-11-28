@@ -1,4 +1,4 @@
-# python3 only
+# python_version >= '3'
 #: Okay
 VAR1, *VAR2, VAR3 = 1, 2, 3
 #: Okay
