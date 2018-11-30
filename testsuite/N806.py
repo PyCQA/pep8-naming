@@ -148,3 +148,21 @@ def f():
         pass
     except IndexError as BAD:
         pass
+#: Okay
+def f():
+    return [i for i in range(3)]
+#: N806:2:22
+def t():
+    return [ITEM for ITEM in range(3)]
+#: N806:2:24
+def d():
+    return {AA: BB for AA, BB in {}}
+#: N806:2:22
+def s():
+    return {Item for Item in range(3)}
+#: N806:2:57
+def n():
+    return (good + BAD for good in range(3) if good for BAD in range(3) if BAD)
+#: N806:2:26
+def e():
+    return tuple(BaD for BaD in range(2))

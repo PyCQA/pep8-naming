@@ -220,7 +220,8 @@ class NamingChecker(object):
                 if names:
                     node.function_type = names[0]
 
-    def find_global_defs(self, func_def_node):
+    @staticmethod
+    def find_global_defs(func_def_node):
         global_names = set()
         nodes_to_check = deque(iter_child_nodes(func_def_node))
         while nodes_to_check:
@@ -411,6 +412,13 @@ class VariablesCheck(BaseASTCheck):
         if node.name:
             for error in self._find_errors(node, parents):
                 yield error
+
+    def visit_generatorexp(self, node, parents, ignore):
+        for gen in node.generators:
+            for error in self._find_errors(gen.target, parents):
+                yield error
+
+    visit_listcomp = visit_dictcomp = visit_setcomp = visit_generatorexp
 
     @staticmethod
     def global_variable_check(name):
