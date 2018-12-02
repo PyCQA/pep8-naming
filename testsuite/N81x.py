@@ -1,3 +1,7 @@
+#: N812:1:1
+import os as OS
+#: Okay
+import os as myos
 #: Okay
 import good as good
 #: Okay

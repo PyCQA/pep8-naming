@@ -352,6 +352,8 @@ class ImportAsCheck(BaseASTCheck):
             elif asname.isupper():
                 yield self.err(node, 'N814', **err_kwargs)
 
+    visit_import = visit_importfrom
+
 
 class VariablesCheck(BaseASTCheck):
     """
