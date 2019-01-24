@@ -1,7 +1,7 @@
 Changes
 =======
 
-0.8.0 - unreleased
+0.8.0 - 2019-01-28
 ------------------
 
 * Detect N806 errors within ``for`` loops and exception handlers.
