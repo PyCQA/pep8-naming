@@ -1,6 +1,30 @@
 Changes
 =======
 
+0.8.0 - 2019-01-28
+------------------
+
+* Detect N806 errors within ``for`` loops and exception handlers.
+
+* Improve support for non-ASCII characters.
+
+* Detect mixedCased variable names at class (N815) and global (N816) scope.
+
+* Ignore Django's ``setUpTestData`` method by default.
+
+* Fix column offsets for N803, N804, and N805 under Python 3.
+
+* Detect underscores within class names as N801 errors.
+
+* Don't flag ``__getattr__`` and ``__dir__`` as N807 errors. (See
+  `PEP 562 <https://www.python.org/dev/peps/pep-0562/>`_).
+
+* ``async`` function and method names are now checked.
+
+* Detect N806 errors in generator expressions and comprehensions.
+
+* Detect N81x errors in ``import x as y`` statements.
+
 0.7.0 - 2018-05-17
 ------------------
 
