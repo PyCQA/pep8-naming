@@ -279,7 +279,7 @@ class FunctionNameCheck(BaseASTCheck):
             return
         if name in ('__dir__', '__getattr__'):
             return
-        if not name.islower() and name != '_':
+        if name.lower() != name:
             yield self.err(node, 'N802', name=name)
         if function_type == 'function' and '__' in (name[:2], name[-2:]):
             yield self.err(node, 'N807', name=name)
@@ -308,7 +308,7 @@ class FunctionArgNamesCheck(BaseASTCheck):
                 return node, arg
 
         for arg, name in arg_name(node.args.vararg), arg_name(node.args.kwarg):
-            if name is not None and not name.islower() and name != '_':
+            if name is not None and name.lower() != name:
                 yield self.err(arg, 'N803', name=name)
                 return
 
@@ -325,7 +325,7 @@ class FunctionArgNamesCheck(BaseASTCheck):
             if name0 != 'cls':
                 yield self.err(arg0, 'N804')
         for arg, name in arg_name_tuples:
-            if not name.islower() and name != '_':
+            if name.lower() != name:
                 yield self.err(arg, 'N803', name=name)
                 return
 
@@ -352,7 +352,7 @@ class ImportAsCheck(BaseASTCheck):
                 if not asname.isupper():
                     yield self.err(node, 'N811', **err_kwargs)
             elif original_name.islower():
-                if not asname.islower() and asname != '_':
+                if asname.lower() != asname:
                     yield self.err(node, 'N812', **err_kwargs)
             elif asname.islower():
                 yield self.err(node, 'N813', **err_kwargs)
@@ -444,7 +444,7 @@ class VariablesCheck(BaseASTCheck):
     def function_variable_check(func, var_name):
         if var_name in func.global_names:
             return None
-        if var_name.islower() or var_name == '_':
+        if var_name.lower() == var_name:
             return None
         return 'N806'
 
