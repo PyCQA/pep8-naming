@@ -12,7 +12,7 @@ try:
 except ImportError:
     from flake8.util import ast, iter_child_nodes
 
-__version__ = '0.8.0'
+__version__ = '0.8.1'
 
 PYTHON_VERSION = sys.version_info[:3]
 PY2 = PYTHON_VERSION[0] == 2
@@ -346,7 +346,7 @@ class ImportAsCheck(BaseASTCheck):
                 if not asname.isupper():
                     yield self.err(node, 'N811', **err_kwargs)
             elif original_name.islower():
-                if not asname.islower():
+                if not asname.islower() and asname != '_':
                     yield self.err(node, 'N812', **err_kwargs)
             elif asname.islower():
                 yield self.err(node, 'N813', **err_kwargs)
