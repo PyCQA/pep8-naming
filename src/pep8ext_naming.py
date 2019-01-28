@@ -100,9 +100,17 @@ class NamingChecker(object):
     """Checker of PEP-8 Naming Conventions."""
     name = 'naming'
     version = __version__
-    ignore_names = ['setUp', 'tearDown', 'setUpClass', 'tearDownClass', 'setUpTestData']
     decorator_to_type = _build_decorator_to_type(
         _default_classmethod_decorators, _default_staticmethod_decorators)
+    ignore_names = [
+        'setUp',
+        'tearDown',
+        'setUpClass',
+        'tearDownClass',
+        'setUpTestData',
+        'failureException',
+        'longMessage',
+        'maxDiff']
 
     def __init__(self, tree, filename):
         self.visitors = BaseASTCheck._checks
@@ -142,7 +150,7 @@ class NamingChecker(object):
 
     @classmethod
     def parse_options(cls, options):
-        cls.ignore_names = options.ignore_names
+        cls.ignore_names = frozenset(options.ignore_names)
         cls.decorator_to_type = _build_decorator_to_type(
             options.classmethod_decorators,
             options.staticmethod_decorators)
@@ -305,7 +313,6 @@ class FunctionArgNamesCheck(BaseASTCheck):
                     yield self.err(arg, 'N803', name=name)
                     return
 
-
         arg_name_tuples = get_arg_name_tuples(node)
         if not arg_name_tuples:
             return
@@ -358,13 +365,13 @@ class ImportAsCheck(BaseASTCheck):
 
 class VariablesCheck(BaseASTCheck):
     """
-    Local variables in functions should be lowercase
+    Class attributes and local variables in functions should be lowercase
     """
     N806 = "variable '{name}' in function should be lowercase"
     N815 = "variable '{name}' in class scope should not be mixedCase"
     N816 = "variable '{name}' in global scope should not be mixedCase"
 
-    def _find_errors(self, assignment_target, parents):
+    def _find_errors(self, assignment_target, parents, ignore):
         for parent_func in reversed(parents):
             if isinstance(parent_func, ast.ClassDef):
                 checker = self.class_variable_check
@@ -375,6 +382,8 @@ class VariablesCheck(BaseASTCheck):
         else:
             checker = self.global_variable_check
         for name in _extract_names(assignment_target):
+            if name in ignore:
+                continue
             error_code = checker(name)
             if error_code:
                 yield self.err(assignment_target, error_code, name=name)
@@ -388,34 +397,36 @@ class VariablesCheck(BaseASTCheck):
                 if node.value.func.id == 'namedtuple':
                     return
         for target in node.targets:
-            for error in self._find_errors(target, parents):
+            for error in self._find_errors(target, parents, ignore):
                 yield error
 
     def visit_with(self, node, parents, ignore):
         if PY2:
-            for error in self._find_errors(node.optional_vars, parents):
+            for error in self._find_errors(
+                    node.optional_vars, parents, ignore):
                 yield error
             return
         for item in node.items:
-            for error in self._find_errors(item.optional_vars, parents):
+            for error in self._find_errors(
+                    item.optional_vars, parents, ignore):
                 yield error
 
     visit_asyncwith = visit_with
 
     def visit_for(self, node, parents, ignore):
-        for error in self._find_errors(node.target, parents):
+        for error in self._find_errors(node.target, parents, ignore):
             yield error
 
     visit_asyncfor = visit_for
 
     def visit_excepthandler(self, node, parents, ignore):
         if node.name:
-            for error in self._find_errors(node, parents):
+            for error in self._find_errors(node, parents, ignore):
                 yield error
 
     def visit_generatorexp(self, node, parents, ignore):
         for gen in node.generators:
-            for error in self._find_errors(gen.target, parents):
+            for error in self._find_errors(gen.target, parents, ignore):
                 yield error
 
     visit_listcomp = visit_dictcomp = visit_setcomp = visit_generatorexp
