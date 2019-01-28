@@ -72,9 +72,9 @@ The following flake8 options are added:
 
 --ignore-names              Ignore errors for specific variable names.
 
-                            Currently, this option can only be used for N802 errors (`#43 <https://github.com/PyCQA/pep8-naming/issues/43>`_).
+                            Currently, this option can only be used for N802, N806, N815, and N816 errors.
 
-                            Default: ``setUp,tearDown,setUpClass,tearDownClass,setUpTestData``.
+                            Default: ``setUp,tearDown,setUpClass,tearDownClass,setUpTestData,failureException,longMessage,maxDiff``.
 
 --classmethod-decorators    List of method decorators pep8-naming plugin should consider class method.
 

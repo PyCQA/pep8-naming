@@ -10,6 +10,9 @@ class C:
 #: Okay
 class C:
     _1 = 0
+#: Okay
+class C:
+    maxDiff = None
 #: N815:2:5
 class C:
     mixedCase = 0
