@@ -358,7 +358,10 @@ class ImportAsCheck(BaseASTCheck):
             elif asname.islower():
                 yield self.err(node, 'N813', **err_kwargs)
             elif asname.isupper():
-                yield self.err(node, 'N814', **err_kwargs)
+                # Special case: Allow uppercase abbreviations of CamelCased
+                # names, like ElementTree and BeautifulSoup use.
+                if asname != ''.join(filter(str.isupper, original_name)):
+                    yield self.err(node, 'N814', **err_kwargs)
 
     visit_import = visit_importfrom
 
