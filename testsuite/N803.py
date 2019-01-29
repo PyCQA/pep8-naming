@@ -40,6 +40,21 @@ def b13(BAD, *VERYBAD, **EXTRABAD):
 #: N803:1:9
 def b14(BAD):
     pass
+#: Okay
+def b15(_):
+    pass
+#: Okay
+def b16(_a):
+    pass
+#: Okay
+def b17(a, _):
+    pass
+#: Okay
+def b18(a, *_):
+    pass
+#: Okay
+def b19(a, **_):
+    pass
 #: N803:2:24
 class Test(object):
     def __init__(self, BAD):
