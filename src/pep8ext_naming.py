@@ -454,8 +454,7 @@ def _extract_names(assignment_target):
     target_type = type(assignment_target)
     if target_type is ast.Name:
         yield assignment_target.id
-        return
-    if target_type in (ast.Tuple, ast.List):
+    elif target_type in (ast.Tuple, ast.List):
         for element in assignment_target.elts:
             element_type = type(element)
             if element_type is ast.Name:
@@ -466,13 +465,16 @@ def _extract_names(assignment_target):
             elif not PY2 and element_type is ast.Starred:  # PEP 3132
                 for n in _extract_names(element.value):
                     yield n
-        return
-    if target_type is ast.ExceptHandler:
+    elif target_type is ast.ExceptHandler:
         if PY2:
-            yield assignment_target.name.id
+            # Python 2 supports unpacking tuple exception values.
+            if isinstance(assignment_target.name, ast.Tuple):
+                for name in assignment_target.name.elts:
+                    yield name.id
+            else:
+                yield assignment_target.name.id
         else:
             yield assignment_target.name
-        return
 
 
 def is_mixed_case(name):
