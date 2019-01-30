@@ -3,6 +3,12 @@
 class C:
     async def γ(self):
         pass
-#: N807
+#: Okay
 async def __β(self):
+    pass
+#: Okay
+async def β__(self):
+    pass
+#: N807
+async def __β__(self):
     pass

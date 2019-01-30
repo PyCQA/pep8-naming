@@ -49,7 +49,7 @@ These error codes are emitted:
 +------+-------------------------------------------------------+
 | N806 | variable in function should be lowercase              |
 +------+-------------------------------------------------------+
-| N807 | function name should not start or end with '__'       |
+| N807 | function name should not start and end with '__'      |
 +------+-------------------------------------------------------+
 +------+-------------------------------------------------------+
 | N811 | constant imported as non constant                     |

@@ -271,7 +271,7 @@ class FunctionNameCheck(BaseASTCheck):
     prevailing style (e.g. threading.py), to retain backwards compatibility.
     """
     N802 = "function name '{name}' should be lowercase"
-    N807 = "function name '{name}' should not start or end with '__'"
+    N807 = "function name '{name}' should not start and end with '__'"
 
     def visit_functiondef(self, node, parents, ignore=None):
         function_type = getattr(node, 'function_type', _FunctionType.FUNCTION)
@@ -283,7 +283,7 @@ class FunctionNameCheck(BaseASTCheck):
         if name.lower() != name:
             yield self.err(node, 'N802', name=name)
         if (function_type == _FunctionType.FUNCTION
-                and '__' in (name[:2], name[-2:])):
+                and name[:2] == '__' and name[-2:] == '__'):
             yield self.err(node, 'N807', name=name)
 
     visit_asyncfunctiondef = visit_functiondef

@@ -3,11 +3,17 @@
 class C:
     def γ(self):
         pass
-#: N807
+#: Okay
 def __β(self):
     pass
+#: Okay
+def β__(self):
+    pass
 #: N807
-def __β6(self):
+def __β__(self):
+    pass
+#: N807
+def __β6__(self):
     pass
 #: Okay
 class C:

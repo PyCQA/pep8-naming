@@ -21,19 +21,30 @@ class C3:
                 break
     except:
         pass
-#: N807
+#: Okay
+def _bad():
+    pass
+#: Okay
 def __bad():
     pass
-#: N807:1:5
+#: Okay
+def bad_():
+    pass
+#: Okay
 def bad__():
     pass
 #: N807
 def __bad__():
     pass
-#: N807
+#: Okay
 class ClassName(object):
     def method(self):
         def __bad():
+            pass
+#: N807
+class ClassName(object):
+    def method(self):
+        def __bad__():
             pass
 #: Okay(--ignore-names=__bad)
 def __bad():
