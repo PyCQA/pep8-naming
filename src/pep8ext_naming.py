@@ -281,7 +281,8 @@ class FunctionNameCheck(BaseASTCheck):
             return
         if name.lower() != name:
             yield self.err(node, 'N802', name=name)
-        if function_type == 'function' and '__' in (name[:2], name[-2:]):
+        if (function_type == _FunctionType.FUNCTION
+                and '__' in (name[:2], name[-2:])):
             yield self.err(node, 'N807', name=name)
 
     visit_asyncfunctiondef = visit_functiondef
@@ -316,7 +317,7 @@ class FunctionArgNamesCheck(BaseASTCheck):
         if not arg_name_tuples:
             return
         arg0, name0 = arg_name_tuples[0]
-        function_type = getattr(node, 'function_type', 'function')
+        function_type = getattr(node, 'function_type', _FunctionType.FUNCTION)
 
         if function_type == _FunctionType.METHOD:
             if name0 != 'self':
