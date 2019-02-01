@@ -1,6 +1,20 @@
 Changes
 =======
 
+0.8.1 - 2019-02-04
+------------------
+
+* ``ignore-names`` now also applies to the N806, N815, and N816 checks.
+
+* ``failureException``, ``longMessage``, and ``maxDiff`` have been added to
+  the default ``ignore-names`` list.
+
+* Allow lowercase names to be imported as just ``_``.
+
+* Allow function arguments to be named just ``_``.
+
+* Support Python 2's tuple syntax in ``except`` clauses.
+
 0.8.0 - 2019-01-28
 ------------------
 
