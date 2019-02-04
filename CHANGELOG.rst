@@ -1,6 +1,11 @@
 Changes
 =======
 
+0.8.2 - 2019-02-04
+------------------
+
+* Fix a problem with ``ignore-names`` option initialization.
+
 0.8.1 - 2019-02-04
 ------------------
 
