@@ -12,7 +12,7 @@ try:
 except ImportError:
     from flake8.util import ast, iter_child_nodes
 
-__version__ = '0.8.1'
+__version__ = '0.8.2'
 
 PYTHON_VERSION = sys.version_info[:3]
 PY2 = PYTHON_VERSION[0] == 2
@@ -83,6 +83,15 @@ class _FunctionType(object):
     METHOD = 'method'
 
 
+_default_ignore_names = [
+        'setUp',
+        'tearDown',
+        'setUpClass',
+        'tearDownClass',
+        'setUpTestData',
+        'failureException',
+        'longMessage',
+        'maxDiff']
 _default_classmethod_decorators = ['classmethod']
 _default_staticmethod_decorators = ['staticmethod']
 
@@ -102,15 +111,7 @@ class NamingChecker(object):
     version = __version__
     decorator_to_type = _build_decorator_to_type(
         _default_classmethod_decorators, _default_staticmethod_decorators)
-    ignore_names = [
-        'setUp',
-        'tearDown',
-        'setUpClass',
-        'tearDownClass',
-        'setUpTestData',
-        'failureException',
-        'longMessage',
-        'maxDiff']
+    ignore_names = frozenset(_default_ignore_names)
 
     def __init__(self, tree, filename):
         self.visitors = BaseASTCheck._checks
@@ -120,7 +121,7 @@ class NamingChecker(object):
     @classmethod
     def add_options(cls, parser):
         options.register(parser, '--ignore-names',
-                         default=cls.ignore_names,
+                         default=_default_ignore_names,
                          action='store',
                          type='string',
                          parse_from_config=True,
