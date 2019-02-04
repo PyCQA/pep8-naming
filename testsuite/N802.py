@@ -19,6 +19,9 @@ def _go_od_():
 #: N802:1:5
 def NotOK():
     pass
+#: Okay(--ignore-names=NotOK)
+def NotOK():
+    pass
 #: Okay
 def _():
     pass
@@ -35,6 +38,10 @@ class ClassName(object):
     def __method__(self):
         pass
 #: N802
+class ClassName(object):
+    def notOk(self):
+        pass
+#: Okay(--ignore-names=notOk)
 class ClassName(object):
     def notOk(self):
         pass

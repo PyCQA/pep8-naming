@@ -22,6 +22,9 @@ def test():
         class Foo(object):
             def test3(self):
                 Bad = 3
+#: Okay(--ignore-names=Bad)
+def test():
+    Bad = 1
 #: Okay
 def good():
     global Bad

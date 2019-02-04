@@ -35,6 +35,9 @@ class ClassName(object):
     def method(self):
         def __bad():
             pass
+#: Okay(--ignore-names=__bad)
+def __bad():
+    pass
 #: Okay
 def __dir__():
     pass
