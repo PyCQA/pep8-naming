@@ -150,7 +150,7 @@ class NamingChecker(object):
 
     @classmethod
     def parse_options(cls, options):
-        cls.ignore_names = frozenset(options.ignore_names)
+        cls.ignore_names = options.ignore_names
         cls.decorator_to_type = _build_decorator_to_type(
             options.classmethod_decorators,
             options.staticmethod_decorators)
