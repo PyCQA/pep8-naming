@@ -473,6 +473,10 @@ def _extract_names(assignment_target):
             if isinstance(assignment_target.name, ast.Tuple):
                 for name in assignment_target.name.elts:
                     yield name.id
+            elif isinstance(assignment_target.name, ast.Attribute):
+                # Python 2 also supports assigning an exception to an attribute
+                # eg. except Exception as obj.attr
+                yield assignment_target.name.attr
             else:
                 yield assignment_target.name.id
         else:
