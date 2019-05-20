@@ -11,8 +11,6 @@ matrix:
   include:
     - env: TOXENV=py27
       python: 2.7
-    - env: TOXENV=py34
-      python: 3.4
     - env: TOXENV=py35
       python: 3.5
     - env: TOXENV=py36
@@ -21,6 +19,10 @@ matrix:
       dist: xenial
       sudo: required
       python: 3.7
+    - env: TOXENV=py38
+      dist: xenial
+      sudo: required
+      python: 3.8-dev
     - env: TOXENV=pypy
       python: pypy
     - env: TOXENV=py27-flake8
