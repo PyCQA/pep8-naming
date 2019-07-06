@@ -63,3 +63,12 @@ class Test(object):
     @classmethod
     def test(cls, BAD):
         pass
+#: Okay(--ignore-names=I)
+def f(I):
+    I.think_therefore_i_am
+#: Okay(--ignore-names=I)
+def f(*I):
+    I[0].think_therefore_i_am
+#: Okay(--ignore-names=I)
+def f(*I):
+    I[''].think_therefore_i_am

@@ -310,6 +310,8 @@ class FunctionArgNamesCheck(BaseASTCheck):
                 return node, arg
 
         for arg, name in arg_name(node.args.vararg), arg_name(node.args.kwarg):
+            if name in ignore:
+               continue
             if name is not None and name.lower() != name:
                 yield self.err(arg, 'N803', name=name)
                 return
@@ -327,7 +329,7 @@ class FunctionArgNamesCheck(BaseASTCheck):
             if name0 != 'cls':
                 yield self.err(arg0, 'N804')
         for arg, name in arg_name_tuples:
-            if name.lower() != name:
+            if name.lower() != name and name not in ignore:
                 yield self.err(arg, 'N803', name=name)
                 return
 
