@@ -17,6 +17,8 @@ __version__ = '0.9.0.dev0'
 PYTHON_VERSION = sys.version_info[:3]
 PY2 = PYTHON_VERSION[0] == 2
 
+METACLASS_BASES = frozenset(('type', 'ABCMeta'))
+
 # Node types which may contain class methods
 METHOD_CONTAINER_NODES = {ast.If, ast.While, ast.For, ast.With}
 FUNC_NODES = (ast.FunctionDef,)
@@ -204,7 +206,8 @@ class NamingChecker(object):
         cls_bases = [b for b in cls_node.bases if isinstance(b, ast.Name)]
         # If this class inherits from `type`, it's a metaclass, and we'll
         # consider all of it's methods to be classmethods.
-        ismetaclass = any(name for name in cls_bases if name.id == 'type')
+        ismetaclass = any(
+            name for name in cls_bases if name.id in METACLASS_BASES)
         self.set_function_nodes_types(
             iter_child_nodes(cls_node), ismetaclass, late_decoration)
 

@@ -1,3 +1,5 @@
+from abc import ABCMeta
+
 #: Okay
 class C:
     def __init__(*args, **kwargs):
@@ -42,6 +44,12 @@ class Foo(object):
         pass
 #: Okay
 class Meta(type):
+    def __new__(cls, name, bases, attrs):
+        pass
+    def test(cls):
+        pass
+#: Okay
+class Meta(ABCMeta):
     def __new__(cls, name, bases, attrs):
         pass
     def test(cls):
