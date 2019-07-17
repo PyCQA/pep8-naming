@@ -104,7 +104,7 @@ def test_file(filename, lines, code, options):
     if code in found_errors:  # Expected FAIL
         return 0
     print("ERROR: %s not in %s. found_errors: %s. Source:\n%s"
-          % (code, filename, found_errors, source))
+          % (code, filename, ','.join(sorted(found_errors)), source))
     return 1
 
 
