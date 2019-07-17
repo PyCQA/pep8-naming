@@ -1,3 +1,5 @@
+from abc import ABCMeta
+
 #: N804:7:13
 class Foo(object):
     @classmethod
@@ -25,6 +27,9 @@ class Meta(type):
         pass
 #: Okay
 class MetaMethod(type):
+    def test(cls):
+        pass
+class MetaMethod(ABCMeta):
     def test(cls):
         pass
 #: Okay
