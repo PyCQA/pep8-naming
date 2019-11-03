@@ -44,12 +44,14 @@ if PY2:
 
     def get_arg_name_tuples(node):
         return _unpack_args(node.args.args)
+elif PYTHON_VERSION < (3, 8):
+    def get_arg_name_tuples(node):
+        groups = (node.args.args, node.args.kwonlyargs)
+        return [(arg, arg.arg) for args in groups for arg in args]
 else:
     def get_arg_name_tuples(node):
-        args = node.args
-        pos_args = [(arg, arg.arg) for arg in args.args]
-        kw_only = [(arg, arg.arg) for arg in args.kwonlyargs]
-        return pos_args + kw_only
+        groups = (node.args.posonlyargs, node.args.args, node.args.kwonlyargs)
+        return [(arg, arg.arg) for args in groups for arg in args]
 
 
 class _ASTCheckMeta(type):
