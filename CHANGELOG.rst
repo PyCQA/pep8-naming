@@ -1,6 +1,19 @@
 Changes
 =======
 
+0.9.0 - 2019-11-06
+------------------
+
+* Drop support for Python 3.3 and 3.4.
+
+* Support positional-only arguments in Python 3.8.
+
+* Recognize ``abc.ABCMeta`` as a metaclass base type.
+
+* ``ignore-names`` now also applies to the N803 check.
+
+* Handle assigning exceptions to object attributes in Python 2.
+
 0.8.2 - 2019-02-04
 ------------------
 
