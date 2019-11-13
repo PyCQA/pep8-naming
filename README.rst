@@ -1,10 +1,11 @@
 .. image:: https://travis-ci.org/PyCQA/pep8-naming.svg?branch=master
     :target: https://travis-ci.org/PyCQA/pep8-naming
 
-PEP-8 Naming Conventions
+PEP 8 Naming Conventions
 ========================
 
-Check the PEP-8 naming conventions.
+Check your code against `PEP 8 <https://www.python.org/dev/peps/pep-0008/>`_
+naming conventions.
 
 This module provides a plugin for ``flake8``, the Python code checker.
 
