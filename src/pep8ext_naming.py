@@ -65,10 +65,12 @@ class _ASTCheckMeta(type):
 def _err(self, node, code, **kwargs):
     lineno, col_offset = node.lineno, node.col_offset
     if isinstance(node, ast.ClassDef):
-        lineno += len(node.decorator_list)
+        if PYTHON_VERSION < (3, 8):
+            lineno += len(node.decorator_list)
         col_offset += 6
     elif isinstance(node, FUNC_NODES):
-        lineno += len(node.decorator_list)
+        if PYTHON_VERSION < (3, 8):
+            lineno += len(node.decorator_list)
         col_offset += 4
     code_str = getattr(self, code)
     if kwargs:
