@@ -1,6 +1,12 @@
 Changes
 =======
 
+0.9.1 - 2019-11-14
+------------------
+
+* Fix line number offsets when reporting errors involving functions with
+  decorators in Python 3.8 and later.
+
 0.9.0 - 2019-11-06
 ------------------
 
