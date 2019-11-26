@@ -330,10 +330,10 @@ class FunctionArgNamesCheck(BaseASTCheck):
         function_type = getattr(node, 'function_type', _FunctionType.FUNCTION)
 
         if function_type == _FunctionType.METHOD:
-            if name0 != 'self':
+            if name0 != 'self' and name0 not in ignore:
                 yield self.err(arg0, 'N805')
         elif function_type == _FunctionType.CLASSMETHOD:
-            if name0 != 'cls':
+            if name0 != 'cls' and name0 not in ignore:
                 yield self.err(arg0, 'N804')
         for arg, name in arg_name_tuples:
             if name.lower() != name and name not in ignore:
