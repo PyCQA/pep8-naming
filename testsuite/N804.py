@@ -16,6 +16,11 @@ class Foo(object):
 
     def __init_subclass(self, ads):
         pass
+#: Okay(--ignore-names=klass)
+class SpecialConventionCase(object):
+    @classmethod
+    def prepare_meta(klass, root):
+        pass
 #: N804:3:14(--classmethod-decorators=clazzy,cool)
 class NewClassIsRequired(object):
     @cool

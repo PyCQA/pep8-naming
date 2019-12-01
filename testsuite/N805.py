@@ -17,6 +17,10 @@ class Foo(object):
 
     def bad(ads, self):
         pass
+#: Okay(--ignore-names=source)
+class GraphQLNode(object):
+    def resolve_foo(source, info):
+        pass
 #: Okay
 class Foo(object):
     def __new__(cls):
