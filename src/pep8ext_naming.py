@@ -351,6 +351,7 @@ class ImportAsCheck(BaseASTCheck):
     N812 = "lowercase '{name}' imported as non lowercase '{asname}'"
     N813 = "camelcase '{name}' imported as lowercase '{asname}'"
     N814 = "camelcase '{name}' imported as constant '{asname}'"
+    N817 = "camelcase '{name}' imported as acronym '{asname}'"
 
     def visit_importfrom(self, node, parents, ignore=None):
         for name in node.names:
@@ -368,7 +369,10 @@ class ImportAsCheck(BaseASTCheck):
             elif asname.islower():
                 yield self.err(node, 'N813', **err_kwargs)
             elif asname.isupper():
-                yield self.err(node, 'N814', **err_kwargs)
+                if ''.join(filter(str.isupper, original_name)) == asname:
+                    yield self.err(node, 'N817', **err_kwargs)
+                else:
+                    yield self.err(node, 'N814', **err_kwargs)
 
     visit_import = visit_importfrom
 
