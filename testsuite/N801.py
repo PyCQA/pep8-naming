@@ -4,6 +4,9 @@ class notok(object):
 #: Okay(--ignore-names=notok)
 class notok(object):
     pass
+#: Okay(--ignore-names=*ok)
+class notok(object):
+    pass
 #: N801
 class Good(object):
     class notok(object):

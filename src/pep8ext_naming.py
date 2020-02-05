@@ -2,6 +2,7 @@
 """Checker of PEP-8 Naming Conventions."""
 import sys
 from collections import deque
+from fnmatch import fnmatch
 from functools import partial
 
 from flake8_polyfill import options
@@ -78,6 +79,10 @@ def _err(self, node, code, **kwargs):
     return lineno, col_offset + 1, '%s %s' % (code, code_str), self
 
 
+def _ignored(name, ignore):
+    return any(fnmatch(name, i) for i in ignore)
+
+
 BaseASTCheck = _ASTCheckMeta('BaseASTCheck', (object,),
                              {'__doc__': "Base for AST Checks.", 'err': _err})
 
@@ -132,8 +137,8 @@ class NamingChecker(object):
                          type='string',
                          parse_from_config=True,
                          comma_separated_list=True,
-                         help='List of names the pep8-naming plugin should '
-                              'ignore. (Defaults to %default)')
+                         help='List of names or glob patterns the pep8-naming '
+                              'plugin should ignore. (Defaults to %default)')
 
         options.register(parser, '--classmethod-decorators',
                          default=_default_classmethod_decorators,
@@ -260,7 +265,7 @@ class ClassNameCheck(BaseASTCheck):
 
     def visit_classdef(self, node, parents, ignore=None):
         name = node.name
-        if ignore and name in ignore:
+        if _ignored(name, ignore):
             return
         name = name.strip('_')
         if not name[:1].isupper() or '_' in name:
@@ -283,7 +288,7 @@ class FunctionNameCheck(BaseASTCheck):
     def visit_functiondef(self, node, parents, ignore=None):
         function_type = getattr(node, 'function_type', _FunctionType.FUNCTION)
         name = node.name
-        if ignore and name in ignore:
+        if _ignored(name, ignore):
             return
         if name in ('__dir__', '__getattr__'):
             return
@@ -317,9 +322,9 @@ class FunctionArgNamesCheck(BaseASTCheck):
                 return node, arg
 
         for arg, name in arg_name(node.args.vararg), arg_name(node.args.kwarg):
-            if name in ignore:
-               continue
-            if name is not None and name.lower() != name:
+            if name is None or _ignored(name, ignore):
+                continue
+            if name.lower() != name:
                 yield self.err(arg, 'N803', name=name)
                 return
 
@@ -330,13 +335,13 @@ class FunctionArgNamesCheck(BaseASTCheck):
         function_type = getattr(node, 'function_type', _FunctionType.FUNCTION)
 
         if function_type == _FunctionType.METHOD:
-            if name0 != 'self' and name0 not in ignore:
+            if name0 != 'self' and not _ignored(name0, ignore):
                 yield self.err(arg0, 'N805')
         elif function_type == _FunctionType.CLASSMETHOD:
-            if name0 != 'cls' and name0 not in ignore:
+            if name0 != 'cls' and not _ignored(name0, ignore):
                 yield self.err(arg0, 'N804')
         for arg, name in arg_name_tuples:
-            if name.lower() != name and name not in ignore:
+            if name.lower() != name and not _ignored(name, ignore):
                 yield self.err(arg, 'N803', name=name)
                 return
 
@@ -396,7 +401,7 @@ class VariablesCheck(BaseASTCheck):
         else:
             checker = self.global_variable_check
         for name in _extract_names(assignment_target):
-            if name in ignore:
+            if _ignored(name, ignore):
                 continue
             error_code = checker(name)
             if error_code:

@@ -22,6 +22,9 @@ def NotOK():
 #: Okay(--ignore-names=NotOK)
 def NotOK():
     pass
+#: Okay(--ignore-names=*OK)
+def NotOK():
+    pass
 #: Okay
 def _():
     pass
@@ -42,6 +45,10 @@ class ClassName(object):
     def notOk(self):
         pass
 #: Okay(--ignore-names=notOk)
+class ClassName(object):
+    def notOk(self):
+        pass
+#: Okay(--ignore-names=*Ok)
 class ClassName(object):
     def notOk(self):
         pass

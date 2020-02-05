@@ -21,6 +21,11 @@ class SpecialConventionCase(object):
     @classmethod
     def prepare_meta(klass, root):
         pass
+#: Okay(--ignore-names=_*)
+class SpecialConventionCase(object):
+    @classmethod
+    def prepare_meta(_class, root):
+        pass
 #: N804:3:14(--classmethod-decorators=clazzy,cool)
 class NewClassIsRequired(object):
     @cool

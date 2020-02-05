@@ -73,7 +73,7 @@ Options
 
 The following flake8 options are added:
 
---ignore-names              Ignore errors for specific names.
+--ignore-names              Ignore errors for specific names or glob patterns.
 
                             Currently, this option can only be used for N802, N803, N804, N805, N806, N815, and N816 errors.
 
