@@ -20,3 +20,5 @@ C6 = 0
 C_6 = 0.
 #: Okay(--ignore-names=mixedCase)
 mixedCase = 0
+#: Okay(--ignore-names=*Case)
+mixedCase = 0
