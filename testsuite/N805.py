@@ -1,3 +1,4 @@
+import abc
 from abc import ABCMeta
 
 #: Okay
@@ -58,6 +59,12 @@ class Meta(type):
         pass
 #: Okay
 class Meta(ABCMeta):
+    def __new__(cls, name, bases, attrs):
+        pass
+    def test(cls):
+        pass
+#: Okay
+class Meta(abc.ABCMeta):
     def __new__(cls, name, bases, attrs):
         pass
     def test(cls):
