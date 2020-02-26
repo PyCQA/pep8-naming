@@ -4,6 +4,7 @@ import sys
 from collections import deque
 from fnmatch import fnmatch
 from functools import partial
+from itertools import chain
 
 from flake8_polyfill import options
 
@@ -212,11 +213,15 @@ class NamingChecker(object):
             if isinstance(meth, ast.Name):
                 late_decoration[meth.id] = self.decorator_to_type[func_name]
 
-        cls_bases = [b for b in cls_node.bases if isinstance(b, ast.Name)]
-        # If this class inherits from `type`, it's a metaclass, and we'll
-        # consider all of it's methods to be classmethods.
-        ismetaclass = any(
-            name for name in cls_bases if name.id in METACLASS_BASES)
+        # If this class inherits from a known metaclass base class, it is
+        # itself a metaclass, and we'll consider all of it's methods to be
+        # classmethods.
+        bases = chain(
+            (b.id for b in cls_node.bases if isinstance(b, ast.Name)),
+            (b.attr for b in cls_node.bases if isinstance(b, ast.Attribute)),
+        )
+        ismetaclass = any(name for name in bases if name in METACLASS_BASES)
+
         self.set_function_nodes_types(
             iter_child_nodes(cls_node), ismetaclass, late_decoration)
 
