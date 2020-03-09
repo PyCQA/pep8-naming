@@ -412,17 +412,29 @@ class VariablesCheck(BaseASTCheck):
             if error_code:
                 yield self.err(assignment_target, error_code, name=name)
 
+    @staticmethod
+    def is_namedtupe(node_value):
+        if isinstance(node_value, ast.Call):
+            if isinstance(node_value.func, ast.Attribute):
+                if node_value.func.attr == 'namedtuple':
+                    return True
+            elif isinstance(node_value.func, ast.Name):
+                if node_value.func.id == 'namedtuple':
+                    return True
+        return False
+
     def visit_assign(self, node, parents, ignore=None):
-        if isinstance(node.value, ast.Call):
-            if isinstance(node.value.func, ast.Attribute):
-                if node.value.func.attr == 'namedtuple':
-                    return
-            elif isinstance(node.value.func, ast.Name):
-                if node.value.func.id == 'namedtuple':
-                    return
+        if self.is_namedtupe(node.value):
+            return
         for target in node.targets:
             for error in self._find_errors(target, parents, ignore):
                 yield error
+
+    def visit_namedexpr(self, node, parents, ignore):
+        if self.is_namedtupe(node.value):
+            return
+        for error in self._find_errors(node.target, parents, ignore):
+            yield error
 
     def visit_with(self, node, parents, ignore):
         if PY2:
