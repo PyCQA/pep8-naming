@@ -436,6 +436,8 @@ class VariablesCheck(BaseASTCheck):
         for error in self._find_errors(node.target, parents, ignore):
             yield error
 
+    visit_annassign = visit_namedexpr
+
     def visit_with(self, node, parents, ignore):
         if PY2:
             for error in self._find_errors(
