@@ -1,6 +1,19 @@
 Changes
 =======
 
+0.10.0 - 2020-03-20
+------------------
+
+* ``--ignore-names`` now supports globbing and applies to the N804 and N805
+  checks.
+
+* "acronym" imports are now treated as their own error code (N817).
+
+* Metaclass detection has been improved.
+
+* Annotated variable declarations (PEP 526) and ``:=`` variable assignments
+  are now supported.
+
 0.9.1 - 2019-11-14
 ------------------
 
