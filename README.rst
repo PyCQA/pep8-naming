@@ -33,6 +33,9 @@ available in ``flake8``::
 
 By default the plugin is enabled.
 
+Error Codes
+-----------
+
 These error codes are emitted:
 
 +------+-------------------------------------------------------+
