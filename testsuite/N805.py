@@ -49,7 +49,15 @@ class Foo(object):
     test2 = staticmethod(test2)
 #: Okay
 class Foo(object):
+    def __new__(cls):
+        pass
+#: Okay
+class Foo(object):
     def __init_subclass__(cls):
+        pass
+#: Okay
+class Foo(object):
+    def __class_getitem__(cls, key):
         pass
 #: Okay
 class Meta(type):
