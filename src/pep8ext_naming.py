@@ -19,6 +19,11 @@ __version__ = '0.10.0'
 PYTHON_VERSION = sys.version_info[:3]
 PY2 = PYTHON_VERSION[0] == 2
 
+CLASS_METHODS = frozenset((
+    '__new__',
+    '__init_subclass__',
+    '__class_getitem__',
+))
 METACLASS_BASES = frozenset(('type', 'ABCMeta'))
 
 # Node types which may contain class methods
@@ -234,7 +239,7 @@ class NamingChecker(object):
             if not isinstance(node, FUNC_NODES):
                 continue
             node.function_type = _FunctionType.METHOD
-            if node.name in ('__new__', '__init_subclass__') or ismetaclass:
+            if node.name in CLASS_METHODS or ismetaclass:
                 node.function_type = _FunctionType.CLASSMETHOD
             if node.name in late_decoration:
                 node.function_type = late_decoration[node.name]
