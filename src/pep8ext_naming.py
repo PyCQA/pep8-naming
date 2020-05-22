@@ -6,6 +6,7 @@ from fnmatch import fnmatch
 from functools import partial
 from itertools import chain
 
+from flake8 import style_guide
 from flake8_polyfill import options
 
 try:
@@ -63,10 +64,11 @@ else:
 
 class _ASTCheckMeta(type):
     def __init__(cls, class_name, bases, namespace):
+        cls.codes = tuple(code for code in namespace if code.startswith('N'))
         try:
-            cls._checks.append(cls())
+            cls.all.append(cls())
         except AttributeError:
-            cls._checks = []
+            cls.all = []
 
 
 def _err(self, node, code, **kwargs):
@@ -126,12 +128,12 @@ class NamingChecker(object):
     """Checker of PEP-8 Naming Conventions."""
     name = 'naming'
     version = __version__
+    visitors = BaseASTCheck.all
     decorator_to_type = _build_decorator_to_type(
         _default_classmethod_decorators, _default_staticmethod_decorators)
     ignore_names = frozenset(_default_ignore_names)
 
     def __init__(self, tree, filename):
-        self.visitors = BaseASTCheck._checks
         self.parents = deque()
         self._node = tree
 
@@ -172,6 +174,15 @@ class NamingChecker(object):
         cls.decorator_to_type = _build_decorator_to_type(
             options.classmethod_decorators,
             options.staticmethod_decorators)
+
+        # Build a list of node visitors based the error codes that have been
+        # selected in the style guide. Only the checks that have been selected
+        # will be evaluated as a performance optimization.
+        engine = style_guide.DecisionEngine(options)
+        cls.visitors = frozenset(
+            visitor for visitor in BaseASTCheck.all for code in visitor.codes
+            if engine.decision_for(code) is style_guide.Decision.Selected
+        )
 
     def run(self):
         return self.visit_tree(self._node) if self._node else ()
