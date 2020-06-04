@@ -104,6 +104,11 @@ class ButWeLostTheOriginalClassMethodLateDecorator(object):
     def test(cls, sy):
         pass
     test = classmethod(test)
+#: Okay(--classmethod-decorators=myclassmethod)
+class C(object):
+    @myclassmethod('foo')
+    def bar(cls):
+        return 42
 #: Okay(--staticmethod-decorators=ecstatik,stcmthd)
 class NewStaticMethodDecorators(object):
     @ecstatik

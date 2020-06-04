@@ -219,7 +219,7 @@ class NamingChecker(object):
                 late_decoration[meth.id] = self.decorator_to_type[func_name]
 
         # If this class inherits from a known metaclass base class, it is
-        # itself a metaclass, and we'll consider all of it's methods to be
+        # itself a metaclass, and we'll consider all of its methods to be
         # classmethods.
         bases = chain(
             (b.id for b in cls_node.bases if isinstance(b, ast.Name)),
@@ -244,12 +244,11 @@ class NamingChecker(object):
             if node.name in late_decoration:
                 node.function_type = late_decoration[node.name]
             elif node.decorator_list:
-                names = [self.decorator_to_type[d.id]
-                         for d in node.decorator_list
-                         if isinstance(d, ast.Name) and
-                         d.id in self.decorator_to_type]
-                if names:
-                    node.function_type = names[0]
+                for d in node.decorator_list:
+                    name = d.func.id if isinstance(d, ast.Call) else d.id
+                    if name in self.decorator_to_type:
+                        node.function_type = self.decorator_to_type[name]
+                        break
 
     @staticmethod
     def find_global_defs(func_def_node):
