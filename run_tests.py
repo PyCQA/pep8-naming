@@ -80,6 +80,11 @@ class OptionsManager(optparse.OptionParser):
 def parse_options(checker, options):
     """Parse the CLI-style flags from `options` and expose to `checker`"""
     options_manager = OptionsManager('flake8')
+    options_manager.add_option('--select', default=[])
+    options_manager.add_option('--extended-default-select', default=['N'])
+    options_manager.add_option('--ignore', default=[])
+    options_manager.add_option('--extend-ignore', default=[])
+    options_manager.add_option('--enable-extensions', default=[])
     checker.add_options(options_manager)
     processed_options, _ = options_manager.parse_args(options)
     checker.parse_options(processed_options)
