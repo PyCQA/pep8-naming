@@ -1,8 +1,17 @@
 Changes
 =======
 
+0.11.0 - 2020-06-16
+-------------------
+
+* ``__class_getitem__`` is now recognized as a class method.
+
+* Support ``ast.Call`` nodes in decorator lists (``@decorator(arg)``).
+
+* As a performance improvement, only checks for selected error codes are run.
+
 0.10.0 - 2020-03-20
-------------------
+-------------------
 
 * ``--ignore-names`` now supports globbing and applies to the N804 and N805
   checks.
