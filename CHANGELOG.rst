@@ -1,6 +1,12 @@
 Changes
 =======
 
+0.11.1 - 2020-06-16
+-------------------
+
+* Fix an AST-related AttributeError when processing decorator lists.
+
+
 0.11.0 - 2020-06-16
 -------------------
 

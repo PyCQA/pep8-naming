@@ -109,6 +109,29 @@ class C(object):
     @myclassmethod('foo')
     def bar(cls):
         return 42
+#: Okay
+class PropertySetter(object):
+    @property
+    def var(self):
+        return True
+    @var.setter
+    def var(self, value):
+        self.var = value
+#: Okay
+class CalledInstanceDecorator(object):
+    @module.inner.decorator()
+    def test(self):
+        pass
+#: Okay(--classmethod-decorators=decorator)
+class CalledClassDecorator(object):
+    @module.inner.decorator()
+    def test(cls):
+        pass
+#: Okay(--staticmethod-decorators=decorator)
+class CalledStaticDecorator(object):
+    @module.inner.decorator()
+    def test():
+        pass
 #: Okay(--staticmethod-decorators=ecstatik,stcmthd)
 class NewStaticMethodDecorators(object):
     @ecstatik
