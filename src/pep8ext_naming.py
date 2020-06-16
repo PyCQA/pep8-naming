@@ -15,7 +15,7 @@ try:
 except ImportError:
     from flake8.util import ast, iter_child_nodes
 
-__version__ = '0.11.0'
+__version__ = '0.11.1'
 
 PYTHON_VERSION = sys.version_info[:3]
 PY2 = PYTHON_VERSION[0] == 2
@@ -256,10 +256,19 @@ class NamingChecker(object):
                 node.function_type = late_decoration[node.name]
             elif node.decorator_list:
                 for d in node.decorator_list:
-                    name = d.func.id if isinstance(d, ast.Call) else d.id
+                    name = self.find_decorator_name(d)
                     if name in self.decorator_to_type:
                         node.function_type = self.decorator_to_type[name]
                         break
+
+    @classmethod
+    def find_decorator_name(cls, d):
+        if isinstance(d, ast.Name):
+            return d.id
+        elif isinstance(d, ast.Attribute):
+            return d.attr
+        elif isinstance(d, ast.Call):
+            return cls.find_decorator_name(d.func)
 
     @staticmethod
     def find_global_defs(func_def_node):
