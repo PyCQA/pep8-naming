@@ -111,7 +111,7 @@ _default_ignore_names = [
         'failureException',
         'longMessage',
         'maxDiff']
-_default_classmethod_decorators = ['classmethod']
+_default_classmethod_decorators = ['classmethod', 'classproperty']
 _default_staticmethod_decorators = ['staticmethod']
 
 

@@ -86,7 +86,7 @@ The following flake8 options are added:
 
                             Used to prevent false N804 errors.
 
-                            Default: ``classmethod``.
+                            Default: ``classmethod,classproperty``.
 
 --staticmethod-decorators   List of method decorators pep8-naming plugin should consider static method.
 
