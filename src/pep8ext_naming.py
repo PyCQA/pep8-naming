@@ -11,7 +11,7 @@ from flake8_polyfill import options
 
 try:
     import ast
-    from ast import iter_child_nodes
+    from ast import iter_child_nodes, ClassDef
 except ImportError:
     from flake8.util import ast, iter_child_nodes
 
@@ -291,6 +291,24 @@ class ClassNameCheck(BaseASTCheck):
     Classes for internal use have a leading underscore in addition.
     """
     N801 = "class name '{name}' should use CapWords convention"
+    N818 = "class name '{name}' should use Error suffix as it is an Exception"
+
+    def get_class_def(self, name, parents):
+        for parent in parents:
+            for class_def in parent.body:
+                if isinstance(class_def, ClassDef) and class_def.name == name:
+                    return class_def
+
+    def superclass_names(self, name, parents):
+        class_def = self.get_class_def(name, parents)
+        if not class_def:
+            return []
+        class_ids = []
+        for base in class_def.bases:
+            if hasattr(base, "id"):
+                class_ids += [base.id]
+                class_ids += self.superclass_names(base.id, parents)
+        return class_ids
 
     def visit_classdef(self, node, parents, ignore=None):
         name = node.name
@@ -299,6 +317,9 @@ class ClassNameCheck(BaseASTCheck):
         name = name.strip('_')
         if not name[:1].isupper() or '_' in name:
             yield self.err(node, 'N801', name=name)
+        superclasses = self.superclass_names(name, parents)
+        if "Exception" in superclasses and name[-5:] != "Error":
+            yield self.err(node, 'N818', name=name)
 
 
 class FunctionNameCheck(BaseASTCheck):
