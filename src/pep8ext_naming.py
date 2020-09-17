@@ -11,7 +11,7 @@ from flake8_polyfill import options
 
 try:
     import ast
-    from ast import iter_child_nodes, ClassDef
+    from ast import iter_child_nodes
 except ImportError:
     from flake8.util import ast, iter_child_nodes
 
@@ -296,7 +296,7 @@ class ClassNameCheck(BaseASTCheck):
     def get_class_def(self, name, parents):
         for parent in parents:
             for class_def in parent.body:
-                if isinstance(class_def, ClassDef) and class_def.name == name:
+                if isinstance(class_def, ast.ClassDef) and class_def.name == name:
                     return class_def
 
     def superclass_names(self, name, parents):
