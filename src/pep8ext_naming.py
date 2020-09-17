@@ -295,9 +295,10 @@ class ClassNameCheck(BaseASTCheck):
 
     def get_class_def(self, name, parents):
         for parent in parents:
-            for class_def in parent.body:
-                if isinstance(class_def, ast.ClassDef) and class_def.name == name:
-                    return class_def
+            for definition in parent.body:
+                class_definition = isinstance(definition, ast.ClassDef)
+                if class_definition and definition.name == name:
+                    return definition
 
     def superclass_names(self, name, parents):
         class_def = self.get_class_def(name, parents)
