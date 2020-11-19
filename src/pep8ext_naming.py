@@ -301,14 +301,14 @@ class ClassNameCheck(BaseASTCheck):
                     return definition
 
     def superclass_names(self, name, parents):
+        class_ids = set()
         class_def = self.get_class_def(name, parents)
         if not class_def:
-            return []
-        class_ids = []
+            return class_ids
         for base in class_def.bases:
             if hasattr(base, "id"):
-                class_ids += [base.id]
-                class_ids += self.superclass_names(base.id, parents)
+                class_ids.add(base.id)
+                class_ids.update(self.superclass_names(base.id, parents))
         return class_ids
 
     def visit_classdef(self, node, parents, ignore=None):
