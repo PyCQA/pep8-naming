@@ -19,12 +19,12 @@ class MixinError(Exception):
     pass
 class Mixin:
     pass
-class MixinActionError(Mixin,MixinError):
+class MixinActionError(Mixin, MixinError):
     pass
 #: N818
 class MixinError(Exception):
     pass
 class Mixin:
     pass
-class MixinActionClass(Mixin,MixinError):
+class MixinActionClass(Mixin, MixinError):
     pass
