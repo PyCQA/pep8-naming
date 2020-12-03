@@ -31,3 +31,31 @@ matrix:
       dist: xenial
       sudo: required
       python: 3.8
+#Added power jobs
+    - env: TOXENV=py27
+      arch: ppc64le
+      python: 2.7
+    - env: TOXENV=py35
+      arch: ppc64le
+      python: 3.5
+    - env: TOXENV=py36
+      arch: ppc64le
+      python: 3.6
+    - env: TOXENV=py37
+      arch: ppc64le
+      dist: xenial
+      sudo: required
+      python: 3.7
+    - env: TOXENV=py38
+      arch: ppc64le
+      dist: xenial
+      sudo: required
+      python: 3.8
+    - env: TOXENV=py27-flake8
+      arch: ppc64le
+      python: 2.7
+    - env: TOXENV=py38-flake8
+      arch: ppc64le
+      dist: xenial
+      sudo: required
+      python: 3.8
