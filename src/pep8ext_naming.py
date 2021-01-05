@@ -319,7 +319,7 @@ class ClassNameCheck(BaseASTCheck):
         if not name[:1].isupper() or '_' in name:
             yield self.err(node, 'N801', name=name)
         superclasses = self.superclass_names(name, parents)
-        if "Exception" in superclasses and name[-5:] != "Error":
+        if "Exception" in superclasses and not name.endswith("Error"):
             yield self.err(node, 'N818', name=name)
 
 
