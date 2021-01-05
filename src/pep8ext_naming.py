@@ -291,7 +291,7 @@ class ClassNameCheck(BaseASTCheck):
     Classes for internal use have a leading underscore in addition.
     """
     N801 = "class name '{name}' should use CapWords convention"
-    N818 = "class name '{name}' should use Error suffix as it is an Exception"
+    N818 = "exception name '{name}' should be named with an Error suffix"
 
     def get_class_def(self, name, parents):
         for parent in parents:
