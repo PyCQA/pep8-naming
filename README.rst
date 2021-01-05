@@ -1,6 +1,3 @@
-.. image:: https://travis-ci.org/PyCQA/pep8-naming.svg?branch=master
-    :target: https://travis-ci.org/PyCQA/pep8-naming
-
 PEP 8 Naming Conventions
 ========================
 
