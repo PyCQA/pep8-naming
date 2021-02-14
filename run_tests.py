@@ -75,6 +75,10 @@ class OptionsManager(optparse.OptionParser):
     def __init__(self, *args, **kwargs):
         optparse.OptionParser.__init__(self, *args, **kwargs)
         self.config_options = []
+        self.ignore = []
+
+    def extend_default_ignore(self, new_ignores):
+        self.ignore += new_ignores
 
 
 def parse_options(checker, options):

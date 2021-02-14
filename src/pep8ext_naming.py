@@ -167,6 +167,7 @@ class NamingChecker(object):
                          help='List of method decorators pep8-naming plugin '
                               'should consider staticmethods (Defaults to '
                               '%default)')
+        parser.extend_default_ignore(['N818'])
 
     @classmethod
     def parse_options(cls, options):
