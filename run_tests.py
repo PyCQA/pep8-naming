@@ -75,6 +75,10 @@ class OptionsManager(optparse.OptionParser):
     def __init__(self, *args, **kwargs):
         optparse.OptionParser.__init__(self, *args, **kwargs)
         self.config_options = []
+        self.ignore = []
+
+    def extend_default_ignore(self, new_ignores):
+        self.ignore += new_ignores
 
 
 def parse_options(checker, options):
@@ -85,6 +89,7 @@ def parse_options(checker, options):
     options_manager.add_option('--ignore', default=[])
     options_manager.add_option('--extend-ignore', default=[])
     options_manager.add_option('--enable-extensions', default=[])
+    options_manager.add_option('--extended-default-ignore', default=[])
     checker.add_options(options_manager)
     processed_options, _ = options_manager.parse_args(options)
     checker.parse_options(processed_options)

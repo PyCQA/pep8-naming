@@ -167,6 +167,7 @@ class NamingChecker(object):
                          help='List of method decorators pep8-naming plugin '
                               'should consider staticmethods (Defaults to '
                               '%default)')
+        parser.extend_default_ignore(['N818'])
 
     @classmethod
     def parse_options(cls, options):
@@ -291,6 +292,25 @@ class ClassNameCheck(BaseASTCheck):
     Classes for internal use have a leading underscore in addition.
     """
     N801 = "class name '{name}' should use CapWords convention"
+    N818 = "exception name '{name}' should be named with an Error suffix"
+
+    def get_class_def(self, name, parents):
+        for parent in parents:
+            for definition in parent.body:
+                is_class_definition = isinstance(definition, ast.ClassDef)
+                if is_class_definition and definition.name == name:
+                    return definition
+
+    def superclass_names(self, name, parents):
+        class_ids = set()
+        class_def = self.get_class_def(name, parents)
+        if not class_def:
+            return class_ids
+        for base in class_def.bases:
+            if hasattr(base, "id"):
+                class_ids.add(base.id)
+                class_ids.update(self.superclass_names(base.id, parents))
+        return class_ids
 
     def visit_classdef(self, node, parents, ignore=None):
         name = node.name
@@ -299,6 +319,9 @@ class ClassNameCheck(BaseASTCheck):
         name = name.strip('_')
         if not name[:1].isupper() or '_' in name:
             yield self.err(node, 'N801', name=name)
+        superclasses = self.superclass_names(name, parents)
+        if "Exception" in superclasses and not name.endswith("Error"):
+            yield self.err(node, 'N818', name=name)
 
 
 class FunctionNameCheck(BaseASTCheck):
