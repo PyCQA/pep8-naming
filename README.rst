@@ -35,40 +35,51 @@ Error Codes
 
 These error codes are emitted:
 
-+------+-------------------------------------------------------+
-| code | sample message                                        |
-+======+=======================================================+
-| N801 | class names should use CapWords convention            |
-+------+-------------------------------------------------------+
-| N802 | function name should be lowercase                     |
-+------+-------------------------------------------------------+
-| N803 | argument name should be lowercase                     |
-+------+-------------------------------------------------------+
-| N804 | first argument of a classmethod should be named 'cls' |
-+------+-------------------------------------------------------+
-| N805 | first argument of a method should be named 'self'     |
-+------+-------------------------------------------------------+
-| N806 | variable in function should be lowercase              |
-+------+-------------------------------------------------------+
-| N807 | function name should not start and end with '__'      |
-+------+-------------------------------------------------------+
-+------+-------------------------------------------------------+
-| N811 | constant imported as non constant                     |
-+------+-------------------------------------------------------+
-| N812 | lowercase imported as non lowercase                   |
-+------+-------------------------------------------------------+
-| N813 | camelcase imported as lowercase                       |
-+------+-------------------------------------------------------+
-| N814 | camelcase imported as constant                        |
-+------+-------------------------------------------------------+
-| N815 | mixedCase variable in class scope                     |
-+------+-------------------------------------------------------+
-| N816 | mixedCase variable in global scope                    |
-+------+-------------------------------------------------------+
-| N817 | camelcase imported as acronym                         |
-+------+-------------------------------------------------------+
-| N818 | error suffix in exception names                       |
-+------+-------------------------------------------------------+
++---------+-----------------------------------------------------------------+
+| code    | sample message                                                  |
++=========+=================================================================+
+| _`N801` | class names should use CapWords convention (`class names`_)     |
++---------+-----------------------------------------------------------------+
+| _`N802` | function name should be lowercase (`function names`_)           |
++---------+-----------------------------------------------------------------+
+| _`N803` | argument name should be lowercase (`function arguments`_)       |
++---------+-----------------------------------------------------------------+
+| _`N804` | first argument of a classmethod should be named 'cls'           |
+|         | (`function arguments`_)                                         |
++---------+-----------------------------------------------------------------+
+| _`N805` | first argument of a method should be named 'self'               |
+|         | (`function arguments`_)                                         |
++---------+-----------------------------------------------------------------+
+| _`N806` | variable in function should be lowercase                        |
++---------+-----------------------------------------------------------------+
+| _`N807` | function name should not start and end with '__'                |
++---------+-----------------------------------------------------------------+
+| _`N811` | constant imported as non constant (`constants`_)                |
++---------+-----------------------------------------------------------------+
+| _`N812` | lowercase imported as non-lowercase                             |
++---------+-----------------------------------------------------------------+
+| _`N813` | camelcase imported as lowercase                                 |
++---------+-----------------------------------------------------------------+
+| _`N814` | camelcase imported as constant                                  |
+|         | (distinct from `N817`_ for selective enforcement)               |
++---------+-----------------------------------------------------------------+
+| _`N815` | mixedCase variable in class scope                               |
+|         | (`constants`_, `method names`_)                                 |
++---------+-----------------------------------------------------------------+
+| _`N816` | mixedCase variable in global scope (`constants`_)               |
++---------+-----------------------------------------------------------------+
+| _`N817` | camelcase imported as acronym                                   |
+|         | (distinct from `N814`_ for selective enforcement)               |
++---------+-----------------------------------------------------------------+
+| _`N818` | error suffix in exception names (`exceptions`_)                 |
++---------+-----------------------------------------------------------------+
+
+.. _class names: https://www.python.org/dev/peps/pep-0008/#class-names
+.. _constants: https://www.python.org/dev/peps/pep-0008/#constants
+.. _exceptions: https://www.python.org/dev/peps/pep-0008/#exception-names
+.. _function names: https://www.python.org/dev/peps/pep-0008/#function-and-variable-names
+.. _function arguments: https://www.python.org/dev/peps/pep-0008/#function-and-method-arguments
+.. _method names: https://www.python.org/dev/peps/pep-0008/#method-names-and-instance-variables
 
 Options
 -------
