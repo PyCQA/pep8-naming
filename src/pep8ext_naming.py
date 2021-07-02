@@ -107,6 +107,8 @@ _default_ignore_names = [
         'tearDown',
         'setUpClass',
         'tearDownClass',
+        'asyncSetUp',
+        'asyncTearDown',
         'setUpTestData',
         'failureException',
         'longMessage',
