@@ -70,5 +70,9 @@ class TestCase:
         pass
     def tearDownClass(self):
         pass
+    def asyncSetUp(self):
+        pass
+    def asyncTearDown(self):
+        pass
     def setUpTestData(self):
         pass

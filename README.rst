@@ -90,7 +90,7 @@ The following flake8 options are added:
 
                             Currently, this option can only be used for N802, N803, N804, N805, N806, N815, and N816 errors.
 
-                            Default: ``setUp,tearDown,setUpClass,tearDownClass,setUpTestData,failureException,longMessage,maxDiff``.
+                            Default: ``setUp,tearDown,setUpClass,tearDownClass,asyncSetUp,asyncTearDown,setUpTestData,failureException,longMessage,maxDiff``.
 
 --classmethod-decorators    List of method decorators pep8-naming plugin should consider class method.
 
