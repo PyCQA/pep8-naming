@@ -1,6 +1,16 @@
 Changes
 =======
 
+0.12.0 - 2021-07-06
+-------------------
+
+* flake8 3.9.1 or later is now required.
+
+* N818 checks exception class names for an "Error" suffix (disabled by default).
+
+* ``asyncSetUp`` and ``asyncTearDown`` are now exempted by default.
+
+
 0.11.1 - 2020-06-16
 -------------------
 

@@ -15,7 +15,7 @@ try:
 except ImportError:
     from flake8.util import ast, iter_child_nodes
 
-__version__ = '0.11.1'
+__version__ = '0.12.0'
 
 PYTHON_VERSION = sys.version_info[:3]
 PY2 = PYTHON_VERSION[0] == 2
