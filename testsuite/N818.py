@@ -28,3 +28,7 @@ class Mixin:
     pass
 class MixinActionClass(Mixin, MixinError):
     pass
+#: Okay
+from decimal import Decimal
+class Decimal(Decimal):
+    pass
