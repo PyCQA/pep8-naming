@@ -1,6 +1,11 @@
 Changes
 =======
 
+0.12.1 - 2021-08-06
+-------------------
+
+* Fix potential stack exhaustion in the N818 check.
+
 0.12.0 - 2021-07-06
 -------------------
 
