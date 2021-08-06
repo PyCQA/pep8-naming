@@ -296,23 +296,24 @@ class ClassNameCheck(BaseASTCheck):
     N801 = "class name '{name}' should use CapWords convention"
     N818 = "exception name '{name}' should be named with an Error suffix"
 
-    def get_class_def(self, name, parents):
+    @classmethod
+    def get_classdef(cls, name, parents):
         for parent in parents:
-            for definition in parent.body:
-                is_class_definition = isinstance(definition, ast.ClassDef)
-                if is_class_definition and definition.name == name:
-                    return definition
+            for node in parent.body:
+                if isinstance(node, ast.ClassDef) and node.name == name:
+                    return node
 
-    def superclass_names(self, name, parents):
-        class_ids = set()
-        class_def = self.get_class_def(name, parents)
-        if not class_def:
-            return class_ids
-        for base in class_def.bases:
-            if hasattr(base, "id"):
-                class_ids.add(base.id)
-                class_ids.update(self.superclass_names(base.id, parents))
-        return class_ids
+    @classmethod
+    def superclass_names(cls, name, parents, _names=None):
+        names = _names or set()
+        classdef = cls.get_classdef(name, parents)
+        if not classdef:
+            return names
+        for base in classdef.bases:
+            if isinstance(base, ast.Name) and base.id not in names:
+                names.add(base.id)
+                names.update(cls.superclass_names(base.id, parents, names))
+        return names
 
     def visit_classdef(self, node, parents, ignore=None):
         name = node.name
