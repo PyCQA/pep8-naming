@@ -86,6 +86,7 @@ def parse_options(checker, options):
     options_manager = OptionsManager('flake8')
     options_manager.add_option('--select', default=[])
     options_manager.add_option('--extended-default-select', default=['N'])
+    options_manager.add_option('--extend-select', default=[])
     options_manager.add_option('--ignore', default=[])
     options_manager.add_option('--extend-ignore', default=[])
     options_manager.add_option('--enable-extensions', default=[])
