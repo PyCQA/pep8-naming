@@ -202,6 +202,7 @@ class NamingChecker(object):
     def visit_node(self, node):
         if isinstance(node, ast.ClassDef):
             self.tag_class_functions(node)
+            self.tag_class_superclasses(node)
         elif isinstance(node, FUNC_NODES):
             self.find_global_defs(node)
 
@@ -264,6 +265,11 @@ class NamingChecker(object):
                         node.function_type = self.decorator_to_type[name]
                         break
 
+    def tag_class_superclasses(self, cls_node):
+        cls_node.superclasses = self.superclass_names(
+            cls_node.name, self.parents
+        )
+
     @classmethod
     def find_decorator_name(cls, d):
         if isinstance(d, ast.Name):
@@ -286,16 +292,6 @@ class NamingChecker(object):
                 nodes_to_check.extend(iter_child_nodes(node))
         func_def_node.global_names = global_names
 
-
-class ClassNameCheck(BaseASTCheck):
-    """
-    Almost without exception, class names use the CapWords convention.
-
-    Classes for internal use have a leading underscore in addition.
-    """
-    N801 = "class name '{name}' should use CapWords convention"
-    N818 = "exception name '{name}' should be named with an Error suffix"
-
     @classmethod
     def get_classdef(cls, name, parents):
         for parent in parents:
@@ -315,6 +311,16 @@ class ClassNameCheck(BaseASTCheck):
                 names.update(cls.superclass_names(base.id, parents, names))
         return names
 
+
+class ClassNameCheck(BaseASTCheck):
+    """
+    Almost without exception, class names use the CapWords convention.
+
+    Classes for internal use have a leading underscore in addition.
+    """
+    N801 = "class name '{name}' should use CapWords convention"
+    N818 = "exception name '{name}' should be named with an Error suffix"
+
     def visit_classdef(self, node, parents, ignore=None):
         name = node.name
         if _ignored(name, ignore):
@@ -322,8 +328,7 @@ class ClassNameCheck(BaseASTCheck):
         name = name.strip('_')
         if not name[:1].isupper() or '_' in name:
             yield self.err(node, 'N801', name=name)
-        superclasses = self.superclass_names(name, parents)
-        if "Exception" in superclasses and not name.endswith("Error"):
+        if "Exception" in node.superclasses and not name.endswith("Error"):
             yield self.err(node, 'N818', name=name)
 
 
@@ -448,6 +453,8 @@ class VariablesCheck(BaseASTCheck):
     def _find_errors(self, assignment_target, parents, ignore):
         for parent_func in reversed(parents):
             if isinstance(parent_func, ast.ClassDef):
+                if "TypedDict" in parent_func.superclasses:
+                    return
                 checker = self.class_variable_check
                 break
             if isinstance(parent_func, FUNC_NODES):
