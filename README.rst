@@ -73,6 +73,9 @@ These error codes are emitted:
 +---------+-----------------------------------------------------------------+
 | _`N818` | error suffix in exception names (`exceptions`_)                 |
 +---------+-----------------------------------------------------------------+
+| _`N819` | mixedCase variable in TypedDict subclass                        |
+|         | (distinct from `N815`_ for selective enforcement)               |
++---------+-----------------------------------------------------------------+
 
 .. _class names: https://www.python.org/dev/peps/pep-0008/#class-names
 .. _constants: https://www.python.org/dev/peps/pep-0008/#constants
@@ -88,7 +91,7 @@ The following flake8 options are added:
 
 --ignore-names              Ignore errors for specific names or glob patterns.
 
-                            Currently, this option can only be used for N802, N803, N804, N805, N806, N815, and N816 errors.
+                            Currently, this option can only be used for N802, N803, N804, N805, N806, N815, N816 and N819 errors.
 
                             Default: ``setUp,tearDown,setUpClass,tearDownClass,asyncSetUp,asyncTearDown,setUpTestData,failureException,longMessage,maxDiff``.
 

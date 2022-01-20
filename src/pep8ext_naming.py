@@ -169,7 +169,7 @@ class NamingChecker(object):
                          help='List of method decorators pep8-naming plugin '
                               'should consider staticmethods (Defaults to '
                               '%default)')
-        parser.extend_default_ignore(['N818'])
+        parser.extend_default_ignore(['N818', 'N819'])
 
     @classmethod
     def parse_options(cls, options):
@@ -449,13 +449,15 @@ class VariablesCheck(BaseASTCheck):
     N806 = "variable '{name}' in function should be lowercase"
     N815 = "variable '{name}' in class scope should not be mixedCase"
     N816 = "variable '{name}' in global scope should not be mixedCase"
+    N819 = "variable '{name}' in TypedDict should not be mixedCase"
 
     def _find_errors(self, assignment_target, parents, ignore):
         for parent_func in reversed(parents):
             if isinstance(parent_func, ast.ClassDef):
                 if "TypedDict" in parent_func.superclasses:
-                    return
-                checker = self.class_variable_check
+                    checker = self.typeddict_variable_check
+                else:
+                    checker = self.class_variable_check
                 break
             if isinstance(parent_func, FUNC_NODES):
                 checker = partial(self.function_variable_check, parent_func)
@@ -543,6 +545,11 @@ class VariablesCheck(BaseASTCheck):
         if var_name.lower() == var_name:
             return None
         return 'N806'
+
+    @staticmethod
+    def typeddict_variable_check(name):
+        if is_mixed_case(name):
+            return 'N819'
 
 
 def _extract_names(assignment_target):

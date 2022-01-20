@@ -25,3 +25,9 @@ class C:
 #: Okay(--ignore-names=*Case)
 class C:
     mixed_Case = 0
+#: N815
+class TypedDict:
+    mixedCase = 0
+#: N815
+class TypedDict:
+    mixed_Case = 0
