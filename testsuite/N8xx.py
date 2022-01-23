@@ -1,4 +1,3 @@
-# python_version >= '3.6'
 #: Okay
 var1: int = 1
 var2: int

@@ -84,3 +84,19 @@ class TestCase:
         pass
     def setUpTestData(self):
         pass
+
+#: Okay
+def γ(x):
+    pass
+#: Okay
+def γ6(x):
+    pass
+
+#: Okay
+async def func(param1, param2):
+    do_stuff()
+    await some_coroutine()
+#: N802
+async def Func(param1, param2):
+    do_stuff()
+    await some_coroutine()

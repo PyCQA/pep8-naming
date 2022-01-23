@@ -18,3 +18,13 @@ from mod import CamelCase as noncamle
 from mod import CamelCase as CONSTANT
 #: N817:1:1
 from mod import CamelCase as CC
+#: Okay
+import good as γ
+#: Okay
+from mod import good as γ
+#: Okay
+import GOOD as Γ
+#: Okay
+from mod import GOOD as Γ
+#: Okay
+from mod import GOOD as Γ1

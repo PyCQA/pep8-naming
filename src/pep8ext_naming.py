@@ -27,12 +27,16 @@ CLASS_METHODS = frozenset((
 METACLASS_BASES = frozenset(('type', 'ABCMeta'))
 
 # Node types which may contain class methods
-METHOD_CONTAINER_NODES = {ast.If, ast.While, ast.For, ast.With, ast.Try}
-FUNC_NODES = (ast.FunctionDef,)
-
-if PYTHON_VERSION > (3, 5):
-    FUNC_NODES += (ast.AsyncFunctionDef,)
-    METHOD_CONTAINER_NODES |= {ast.AsyncWith, ast.AsyncFor}
+METHOD_CONTAINER_NODES = {
+    ast.If,
+    ast.While,
+    ast.For,
+    ast.With,
+    ast.Try,
+    ast.AsyncWith,
+    ast.AsyncFor,
+}
+FUNC_NODES = (ast.FunctionDef, ast.AsyncFunctionDef)
 
 if PYTHON_VERSION < (3, 8):
     def get_arg_name_tuples(node):
