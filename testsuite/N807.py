@@ -37,12 +37,12 @@ def bad__():
 def __bad__():
     pass
 #: Okay
-class ClassName(object):
+class ClassName:
     def method(self):
         def __bad():
             pass
 #: N807
-class ClassName(object):
+class ClassName:
     def method(self):
         def __bad__():
             pass

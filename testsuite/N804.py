@@ -1,7 +1,7 @@
 from abc import ABCMeta
 
 #: N804:7:13
-class Foo(object):
+class Foo:
     @classmethod
     def mmm(cls, ads):
         pass
@@ -17,17 +17,17 @@ class Foo(object):
     def __init_subclass(self, ads):
         pass
 #: Okay(--ignore-names=klass)
-class SpecialConventionCase(object):
+class SpecialConventionCase:
     @classmethod
     def prepare_meta(klass, root):
         pass
 #: Okay(--ignore-names=_*)
-class SpecialConventionCase(object):
+class SpecialConventionCase:
     @classmethod
     def prepare_meta(_class, root):
         pass
 #: N804:3:14(--classmethod-decorators=clazzy,cool)
-class NewClassIsRequired(object):
+class NewClassIsRequired:
     @cool
     def test(self, sy):
         pass
@@ -43,7 +43,7 @@ class MetaMethod(ABCMeta):
     def test(cls):
         pass
 #: Okay
-class NotMeta(object):
+class NotMeta:
     otherclass = Foo
 class AttributeParent(NotMeta.otherclass):
     pass
@@ -51,7 +51,7 @@ class CallParent(type('_tmp', (), {})):
     pass
 
 #: N804:7:19
-class Foo(object):
+class Foo:
     @classmethod
     async def mmm(cls, ads):
         pass
@@ -67,7 +67,7 @@ class Foo(object):
     async def __init_subclass(self, ads):
         pass
 #: N804:3:20(--classmethod-decorators=clazzy,cool)
-class NewClassIsRequired(object):
+class NewClassIsRequired:
     @cool
     async def test(self, sy):
         pass
@@ -80,7 +80,7 @@ class MetaMethod(type):
     async def test(cls):
         pass
 #: Okay
-class NotMeta(object):
+class NotMeta:
     otherclass = Foo
 class AttributeParent(NotMeta.otherclass):
     pass

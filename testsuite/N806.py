@@ -8,7 +8,7 @@ def test():
 #: Okay
 GOOD = 1
 #: Okay
-class Test(object):
+class Test:
     GOOD = 1
 #: N806
 def test():
@@ -19,7 +19,7 @@ def test():
 #: N806
 def test():
     def test2():
-        class Foo(object):
+        class Foo:
             def test3(self):
                 Bad = 3
 #: Okay(--ignore-names=Bad)

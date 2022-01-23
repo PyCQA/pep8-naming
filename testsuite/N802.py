@@ -29,27 +29,27 @@ def NotOK():
 def _():
     pass
 #: Okay
-class Foo(object):
+class Foo:
     def __method(self):
         pass
 #: Okay
-class Foo(object):
+class Foo:
     def __method__(self):
         pass
 #: Okay
-class ClassName(object):
+class ClassName:
     def __method__(self):
         pass
 #: N802
-class ClassName(object):
+class ClassName:
     def notOk(self):
         pass
 #: Okay(--ignore-names=notOk)
-class ClassName(object):
+class ClassName:
     def notOk(self):
         pass
 #: Okay(--ignore-names=*Ok)
-class ClassName(object):
+class ClassName:
     def notOk(self):
         pass
 #: Okay

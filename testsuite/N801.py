@@ -1,19 +1,19 @@
 #: N801
-class notok(object):
+class notok:
     pass
 #: Okay(--ignore-names=notok)
-class notok(object):
+class notok:
     pass
 #: Okay(--ignore-names=*ok)
-class notok(object):
+class notok:
     pass
 #: N801
-class Good(object):
-    class notok(object):
+class Good:
+    class notok:
         pass
     pass
 #: Okay
-class VeryGood(object):
+class VeryGood:
     pass
 #: N801:1:7
 class _:

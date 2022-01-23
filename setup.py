@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import with_statement
 from setuptools import setup
 from setuptools.command.test import test as TestCommand
 

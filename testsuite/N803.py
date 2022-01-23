@@ -59,7 +59,7 @@ def b18(a, *_):
 def b19(a, **_):
     pass
 #: N803:2:24
-class Test(object):
+class Test:
     def __init__(self, BAD):
         pass
 
