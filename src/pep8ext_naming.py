@@ -18,7 +18,6 @@ except ImportError:
 __version__ = '0.12.1'
 
 PYTHON_VERSION = sys.version_info[:3]
-PY2 = PYTHON_VERSION[0] == 2
 
 CLASS_METHODS = frozenset((
     '__new__',
@@ -28,31 +27,14 @@ CLASS_METHODS = frozenset((
 METACLASS_BASES = frozenset(('type', 'ABCMeta'))
 
 # Node types which may contain class methods
-METHOD_CONTAINER_NODES = {ast.If, ast.While, ast.For, ast.With}
+METHOD_CONTAINER_NODES = {ast.If, ast.While, ast.For, ast.With, ast.Try}
 FUNC_NODES = (ast.FunctionDef,)
-
-if PY2:
-    METHOD_CONTAINER_NODES |= {ast.TryExcept, ast.TryFinally}
-else:
-    METHOD_CONTAINER_NODES |= {ast.Try}
 
 if PYTHON_VERSION > (3, 5):
     FUNC_NODES += (ast.AsyncFunctionDef,)
     METHOD_CONTAINER_NODES |= {ast.AsyncWith, ast.AsyncFor}
 
-if PY2:
-    def _unpack_args(args):
-        ret = []
-        for arg in args:
-            if isinstance(arg, ast.Tuple):
-                ret.extend(_unpack_args(arg.elts))
-            else:
-                ret.append((arg, arg.id))
-        return ret
-
-    def get_arg_name_tuples(node):
-        return _unpack_args(node.args.args)
-elif PYTHON_VERSION < (3, 8):
+if PYTHON_VERSION < (3, 8):
     def get_arg_name_tuples(node):
         groups = (node.args.args, node.args.kwonlyargs)
         return [(arg, arg.arg) for args in groups for arg in args]
@@ -373,10 +355,7 @@ class FunctionArgNamesCheck(BaseASTCheck):
     def visit_functiondef(self, node, parents, ignore=None):
 
         def arg_name(arg):
-            try:
-                return arg, arg.arg
-            except AttributeError:  # PY2
-                return node, arg
+            return (arg, arg.arg) if arg else (node, arg)
 
         for arg, name in arg_name(node.args.vararg), arg_name(node.args.kwarg):
             if name is None or _ignored(name, ignore):
@@ -491,11 +470,6 @@ class VariablesCheck(BaseASTCheck):
     visit_annassign = visit_namedexpr
 
     def visit_with(self, node, parents, ignore):
-        if PY2:
-            for error in self._find_errors(
-                    node.optional_vars, parents, ignore):
-                yield error
-            return
         for item in node.items:
             for error in self._find_errors(
                     item.optional_vars, parents, ignore):
@@ -553,23 +527,11 @@ def _extract_names(assignment_target):
             elif element_type in (ast.Tuple, ast.List):
                 for n in _extract_names(element):
                     yield n
-            elif not PY2 and element_type is ast.Starred:  # PEP 3132
+            elif element_type is ast.Starred:  # PEP 3132
                 for n in _extract_names(element.value):
                     yield n
     elif target_type is ast.ExceptHandler:
-        if PY2:
-            # Python 2 supports unpacking tuple exception values.
-            if isinstance(assignment_target.name, ast.Tuple):
-                for name in assignment_target.name.elts:
-                    yield name.id
-            elif isinstance(assignment_target.name, ast.Attribute):
-                # Python 2 also supports assigning an exception to an attribute
-                # eg. except Exception as obj.attr
-                yield assignment_target.name.attr
-            else:
-                yield assignment_target.name.id
-        else:
-            yield assignment_target.name
+        yield assignment_target.name
 
 
 def is_mixed_case(name):
