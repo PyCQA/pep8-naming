@@ -61,6 +61,14 @@ def tearDown():
     pass
 
 #: Okay
+def setUpModule():
+    pass
+
+#: Okay
+def tearDownModule():
+    pass
+
+#: Okay
 class TestCase:
     def setUp(self):
         pass
