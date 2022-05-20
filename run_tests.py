@@ -1,9 +1,9 @@
-import optparse
 import os
 import platform
 import re
 import sys
 
+from flake8.options.manager import OptionManager
 import pep8ext_naming
 
 
@@ -69,20 +69,9 @@ def load_tests(lines):
         yield testcase, code, options
 
 
-class OptionsManager(optparse.OptionParser):
-    """A Flake8-2.x-compatible OptionsManager."""
-    def __init__(self, *args, **kwargs):
-        optparse.OptionParser.__init__(self, *args, **kwargs)
-        self.config_options = []
-        self.ignore = []
-
-    def extend_default_ignore(self, new_ignores):
-        self.ignore += new_ignores
-
-
 def parse_options(checker, options):
     """Parse the CLI-style flags from `options` and expose to `checker`"""
-    options_manager = OptionsManager('flake8')
+    options_manager = OptionManager('flake8', version=pep8ext_naming.__version__)
     options_manager.add_option('--select', default=[])
     options_manager.add_option('--extended-default-select', default=['N'])
     options_manager.add_option('--extend-select', default=[])

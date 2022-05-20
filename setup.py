@@ -42,7 +42,7 @@ setup(
     license='Expat license',
     package_dir={'': 'src'},
     py_modules=['pep8ext_naming'],
-    install_requires=['flake8>=3.9.1', 'flake8_polyfill>=1.0.2,<2'],
+    install_requires=['flake8>=3.9.1'],
     zip_safe=False,
     entry_points={
         'flake8.extension': [
