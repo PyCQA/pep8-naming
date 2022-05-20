@@ -59,7 +59,7 @@ def b18(a, *_):
 def b19(a, **_):
     pass
 #: N803:2:24
-class Test(object):
+class Test:
     def __init__(self, BAD):
         pass
 
@@ -75,3 +75,41 @@ def f(*I):
 #: Okay(--ignore-names=I)
 def f(*I):
     I[''].think_therefore_i_am
+
+#: Okay
+def compare(a, b, *, key=None):
+    pass
+#: N803
+def compare(a, b, *, BAD=None):
+    pass
+#: N803
+def compare(a, b, *VERY, bad=None):
+    pass
+#: N803
+def compare(a, b, *ok, fine=None, **BAD):
+    pass
+#: Okay
+def foo(α, ß, γ):
+    pass
+#: Okay
+def foo(α, ß=''):
+    pass
+#: Okay
+def foo(**κ):
+    pass
+#: Okay
+def foo(*α):
+    pass
+#: Okay
+def foo(**κ2):
+    pass
+#: Okay
+def foo(*α2):
+    pass
+
+#: Okay
+async def compare(a, b, *, key=None):
+    pass
+#: N803
+async def compare(a, b, *, BAD=None):
+    pass

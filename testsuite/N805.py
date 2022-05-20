@@ -12,26 +12,26 @@ class C:
     def m(cls, k='w'):  # noqa: N805
         pass
 #: N805
-class Foo(object):
+class Foo:
     def good(self, ads):
         pass
 
     def bad(ads, self):
         pass
 #: Okay(--ignore-names=a*)
-class Foo(object):
+class Foo:
     def bad(ads, self):
         pass
 #: Okay(--ignore-names=source)
-class GraphQLNode(object):
+class GraphQLNode:
     def resolve_foo(source, info):
         pass
 #: Okay
-class Foo(object):
+class Foo:
     def __new__(cls):
         return object.__new__(Foo)
 #: Okay
-class Foo(object):
+class Foo:
     @classmethod
     def __prepare__(cls):
         pass
@@ -48,15 +48,15 @@ class Foo(object):
         pass
     test2 = staticmethod(test2)
 #: Okay
-class Foo(object):
+class Foo:
     def __new__(cls):
         pass
 #: Okay
-class Foo(object):
+class Foo:
     def __init_subclass__(cls):
         pass
 #: Okay
-class Foo(object):
+class Foo:
     def __class_getitem__(cls, key):
         pass
 #: Okay
@@ -78,7 +78,7 @@ class Meta(abc.ABCMeta):
     def test(cls):
         pass
 #: Okay(--classmethod-decorators=clazzy,cool)
-class NewClassmethodDecorators(object):
+class NewClassmethodDecorators:
     @clazzy
     def test1(cls, sy):
         pass
@@ -95,22 +95,22 @@ class NewClassmethodDecorators(object):
         pass
     test4 = cool(test4)
 #: N805(--classmethod-decorators=clazzy,cool)
-class ButWeLostTheOriginalClassMethodDecorator(object):
+class ButWeLostTheOriginalClassMethodDecorator:
     @classmethod
     def test(cls, sy):
         pass
 #: N805(--classmethod-decorators=clazzy,cool)
-class ButWeLostTheOriginalClassMethodLateDecorator(object):
+class ButWeLostTheOriginalClassMethodLateDecorator:
     def test(cls, sy):
         pass
     test = classmethod(test)
 #: Okay(--classmethod-decorators=myclassmethod)
-class C(object):
+class C:
     @myclassmethod('foo')
     def bar(cls):
         return 42
 #: Okay
-class PropertySetter(object):
+class PropertySetter:
     @property
     def var(self):
         return True
@@ -118,22 +118,22 @@ class PropertySetter(object):
     def var(self, value):
         self.var = value
 #: Okay
-class CalledInstanceDecorator(object):
+class CalledInstanceDecorator:
     @module.inner.decorator()
     def test(self):
         pass
 #: Okay(--classmethod-decorators=decorator)
-class CalledClassDecorator(object):
+class CalledClassDecorator:
     @module.inner.decorator()
     def test(cls):
         pass
 #: Okay(--staticmethod-decorators=decorator)
-class CalledStaticDecorator(object):
+class CalledStaticDecorator:
     @module.inner.decorator()
     def test():
         pass
 #: Okay(--staticmethod-decorators=ecstatik,stcmthd)
-class NewStaticMethodDecorators(object):
+class NewStaticMethodDecorators:
     @ecstatik
     def test1(so, exciting):
         pass
@@ -150,12 +150,28 @@ class NewStaticMethodDecorators(object):
         pass
     test4 = stcmthd(test4)
 #: N805(--staticmethod-decorators=exstatik,stcmthd)
-class ButWeLostTheOriginalStaticMethodDecorator(object):
+class ButWeLostTheOriginalStaticMethodDecorator:
     @staticmethod
     def test(so, exciting):
         pass
 #: N805(--staticmethod-decorators=exstatik,stcmthd)
-class ButWeLostTheOriginalStaticMethodLateDecorator(object):
+class ButWeLostTheOriginalStaticMethodLateDecorator:
     def test(so, exciting):
+        pass
+    test = staticmethod(test)
+
+#: Okay
+class C:
+    async def __init__(*args, **kwargs):
+        pass
+#: N805:4:17
+class C:
+    @decorator(
+        'a')
+    async def m(cls, k='w'):  # noqa: N805
+        pass
+#: N805(--staticmethod-decorators=exstatik,stcmthd)
+class ButWeLostTheOriginalStaticMethodLateDecorator:
+    async def test(so, exciting):
         pass
     test = staticmethod(test)

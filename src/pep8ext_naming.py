@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Checker of PEP-8 Naming Conventions."""
 import sys
 from collections import deque
@@ -27,12 +26,16 @@ CLASS_METHODS = frozenset((
 METACLASS_BASES = frozenset(('type', 'ABCMeta'))
 
 # Node types which may contain class methods
-METHOD_CONTAINER_NODES = {ast.If, ast.While, ast.For, ast.With, ast.Try}
-FUNC_NODES = (ast.FunctionDef,)
-
-if PYTHON_VERSION > (3, 5):
-    FUNC_NODES += (ast.AsyncFunctionDef,)
-    METHOD_CONTAINER_NODES |= {ast.AsyncWith, ast.AsyncFor}
+METHOD_CONTAINER_NODES = {
+    ast.If,
+    ast.While,
+    ast.For,
+    ast.With,
+    ast.Try,
+    ast.AsyncWith,
+    ast.AsyncFor,
+}
+FUNC_NODES = (ast.FunctionDef, ast.AsyncFunctionDef)
 
 if PYTHON_VERSION < (3, 8):
     def get_arg_name_tuples(node):
@@ -66,7 +69,7 @@ def _err(self, node, code, **kwargs):
     code_str = getattr(self, code)
     if kwargs:
         code_str = code_str.format(**kwargs)
-    return lineno, col_offset + 1, '%s %s' % (code, code_str), self
+    return lineno, col_offset + 1, f'{code} {code_str}', self
 
 
 def _ignored(name, ignore):
@@ -77,7 +80,7 @@ BaseASTCheck = _ASTCheckMeta('BaseASTCheck', (object,),
                              {'__doc__': "Base for AST Checks.", 'err': _err})
 
 
-class _FunctionType(object):
+class _FunctionType:
     CLASSMETHOD = 'classmethod'
     STATICMETHOD = 'staticmethod'
     FUNCTION = 'function'
@@ -110,7 +113,7 @@ def _build_decorator_to_type(classmethod_decorators, staticmethod_decorators):
     return decorator_to_type
 
 
-class NamingChecker(object):
+class NamingChecker:
     """Checker of PEP-8 Naming Conventions."""
     name = 'naming'
     version = __version__
@@ -175,12 +178,10 @@ class NamingChecker(object):
         return self.visit_tree(self._node) if self._node else ()
 
     def visit_tree(self, node):
-        for error in self.visit_node(node):
-            yield error
+        yield from self.visit_node(node)
         self.parents.append(node)
         for child in iter_child_nodes(node):
-            for error in self.visit_tree(child):
-                yield error
+            yield from self.visit_tree(child)
         self.parents.pop()
 
     def visit_node(self, node):
@@ -196,8 +197,7 @@ class NamingChecker(object):
             visitor_method = getattr(visitor, method, None)
             if visitor_method is None:
                 continue
-            for error in visitor_method(node, parents, ignore_names):
-                yield error
+            yield from visitor_method(node, parents, ignore_names)
 
     def tag_class_functions(self, cls_node):
         """Tag functions if they are methods, classmethods, staticmethods"""
@@ -458,40 +458,34 @@ class VariablesCheck(BaseASTCheck):
         if self.is_namedtupe(node.value):
             return
         for target in node.targets:
-            for error in self._find_errors(target, parents, ignore):
-                yield error
+            yield from self._find_errors(target, parents, ignore)
 
     def visit_namedexpr(self, node, parents, ignore):
         if self.is_namedtupe(node.value):
             return
-        for error in self._find_errors(node.target, parents, ignore):
-            yield error
+        yield from self._find_errors(node.target, parents, ignore)
 
     visit_annassign = visit_namedexpr
 
     def visit_with(self, node, parents, ignore):
         for item in node.items:
-            for error in self._find_errors(
-                    item.optional_vars, parents, ignore):
-                yield error
+            yield from self._find_errors(
+                    item.optional_vars, parents, ignore)
 
     visit_asyncwith = visit_with
 
     def visit_for(self, node, parents, ignore):
-        for error in self._find_errors(node.target, parents, ignore):
-            yield error
+        yield from self._find_errors(node.target, parents, ignore)
 
     visit_asyncfor = visit_for
 
     def visit_excepthandler(self, node, parents, ignore):
         if node.name:
-            for error in self._find_errors(node, parents, ignore):
-                yield error
+            yield from self._find_errors(node, parents, ignore)
 
     def visit_generatorexp(self, node, parents, ignore):
         for gen in node.generators:
-            for error in self._find_errors(gen.target, parents, ignore):
-                yield error
+            yield from self._find_errors(gen.target, parents, ignore)
 
     visit_listcomp = visit_dictcomp = visit_setcomp = visit_generatorexp
 
@@ -525,11 +519,9 @@ def _extract_names(assignment_target):
             if element_type is ast.Name:
                 yield element.id
             elif element_type in (ast.Tuple, ast.List):
-                for n in _extract_names(element):
-                    yield n
+                yield from _extract_names(element)
             elif element_type is ast.Starred:  # PEP 3132
-                for n in _extract_names(element.value):
-                    yield n
+                yield from _extract_names(element.value)
     elif target_type is ast.ExceptHandler:
         yield assignment_target.name
 
