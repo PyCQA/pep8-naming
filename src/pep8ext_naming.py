@@ -156,7 +156,7 @@ class NamingChecker:
                          help='List of method decorators pep8-naming plugin '
                               'should consider staticmethods (Defaults to '
                               '%default)')
-        parser.extend_default_ignore(['N818'])
+        parser.extend_default_ignore(['N818', 'N819'])
 
     @classmethod
     def parse_options(cls, options):
@@ -187,6 +187,7 @@ class NamingChecker:
     def visit_node(self, node):
         if isinstance(node, ast.ClassDef):
             self.tag_class_functions(node)
+            self.tag_class_superclasses(node)
         elif isinstance(node, FUNC_NODES):
             self.find_global_defs(node)
 
@@ -248,6 +249,11 @@ class NamingChecker:
                         node.function_type = self.decorator_to_type[name]
                         break
 
+    def tag_class_superclasses(self, cls_node):
+        cls_node.superclasses = self.superclass_names(
+            cls_node.name, self.parents
+        )
+
     @classmethod
     def find_decorator_name(cls, d):
         if isinstance(d, ast.Name):
@@ -270,16 +276,6 @@ class NamingChecker:
                 nodes_to_check.extend(iter_child_nodes(node))
         func_def_node.global_names = global_names
 
-
-class ClassNameCheck(BaseASTCheck):
-    """
-    Almost without exception, class names use the CapWords convention.
-
-    Classes for internal use have a leading underscore in addition.
-    """
-    N801 = "class name '{name}' should use CapWords convention"
-    N818 = "exception name '{name}' should be named with an Error suffix"
-
     @classmethod
     def get_classdef(cls, name, parents):
         for parent in parents:
@@ -299,6 +295,16 @@ class ClassNameCheck(BaseASTCheck):
                 names.update(cls.superclass_names(base.id, parents, names))
         return names
 
+
+class ClassNameCheck(BaseASTCheck):
+    """
+    Almost without exception, class names use the CapWords convention.
+
+    Classes for internal use have a leading underscore in addition.
+    """
+    N801 = "class name '{name}' should use CapWords convention"
+    N818 = "exception name '{name}' should be named with an Error suffix"
+
     def visit_classdef(self, node, parents, ignore=None):
         name = node.name
         if _ignored(name, ignore):
@@ -306,8 +312,7 @@ class ClassNameCheck(BaseASTCheck):
         name = name.strip('_')
         if not name[:1].isupper() or '_' in name:
             yield self.err(node, 'N801', name=name)
-        superclasses = self.superclass_names(name, parents)
-        if "Exception" in superclasses and not name.endswith("Error"):
+        if "Exception" in node.superclasses and not name.endswith("Error"):
             yield self.err(node, 'N818', name=name)
 
 
@@ -425,11 +430,15 @@ class VariablesCheck(BaseASTCheck):
     N806 = "variable '{name}' in function should be lowercase"
     N815 = "variable '{name}' in class scope should not be mixedCase"
     N816 = "variable '{name}' in global scope should not be mixedCase"
+    N819 = "variable '{name}' in TypedDict should not be mixedCase"
 
     def _find_errors(self, assignment_target, parents, ignore):
         for parent_func in reversed(parents):
             if isinstance(parent_func, ast.ClassDef):
-                checker = self.class_variable_check
+                if "TypedDict" in parent_func.superclasses:
+                    checker = self.typeddict_variable_check
+                else:
+                    checker = self.class_variable_check
                 break
             if isinstance(parent_func, FUNC_NODES):
                 checker = partial(self.function_variable_check, parent_func)
@@ -506,6 +515,11 @@ class VariablesCheck(BaseASTCheck):
         if var_name.lower() == var_name:
             return None
         return 'N806'
+
+    @staticmethod
+    def typeddict_variable_check(name):
+        if is_mixed_case(name):
+            return 'N819'
 
 
 def _extract_names(assignment_target):
