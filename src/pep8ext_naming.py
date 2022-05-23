@@ -6,7 +6,6 @@ from functools import partial
 from itertools import chain
 
 from flake8 import style_guide
-from flake8_polyfill import options
 
 try:
     import ast
@@ -128,34 +127,32 @@ class NamingChecker:
 
     @classmethod
     def add_options(cls, parser):
-        options.register(parser, '--ignore-names',
-                         default=_default_ignore_names,
-                         action='store',
-                         type='string',
-                         parse_from_config=True,
-                         comma_separated_list=True,
-                         help='List of names or glob patterns the pep8-naming '
-                              'plugin should ignore. (Defaults to %default)')
-
-        options.register(parser, '--classmethod-decorators',
-                         default=_default_classmethod_decorators,
-                         action='store',
-                         type='string',
-                         parse_from_config=True,
-                         comma_separated_list=True,
-                         help='List of method decorators pep8-naming plugin '
-                              'should consider classmethods (Defaults to '
-                              '%default)')
-
-        options.register(parser, '--staticmethod-decorators',
-                         default=_default_staticmethod_decorators,
-                         action='store',
-                         type='string',
-                         parse_from_config=True,
-                         comma_separated_list=True,
-                         help='List of method decorators pep8-naming plugin '
-                              'should consider staticmethods (Defaults to '
-                              '%default)')
+        parser.add_option(
+            '--ignore-names',
+            default=_default_ignore_names,
+            parse_from_config=True,
+            comma_separated_list=True,
+            help='List of names or glob patterns the pep8-naming '
+            'plugin should ignore. (Defaults to %default)',
+        )
+        parser.add_option(
+            '--classmethod-decorators',
+            default=_default_classmethod_decorators,
+            parse_from_config=True,
+            comma_separated_list=True,
+            help='List of method decorators pep8-naming plugin '
+            'should consider classmethods (Defaults to '
+            '%default)',
+        )
+        parser.add_option(
+            '--staticmethod-decorators',
+            default=_default_staticmethod_decorators,
+            parse_from_config=True,
+            comma_separated_list=True,
+            help='List of method decorators pep8-naming plugin '
+            'should consider staticmethods (Defaults to '
+            '%default)',
+        )
         parser.extend_default_ignore(['N818'])
 
     @classmethod
