@@ -26,7 +26,7 @@ When both ``flake8`` and ``pep8-naming`` are installed, the plugin is
 available in ``flake8``::
 
   $ flake8 --version
-  4.0.1 (mccabe: 0.6.1, naming: 0.12.1, pycodestyle: 2.8.0, pyflakes: 2.4.0) CPython 3.8.10 on Linux
+  4.0.1 (mccabe: 0.6.1, naming: 0.13.0, pycodestyle: 2.8.0, pyflakes: 2.4.0) CPython 3.8.10 on Linux
 
 By default the plugin is enabled.
 
