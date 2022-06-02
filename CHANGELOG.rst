@@ -1,6 +1,13 @@
 Changes
 =======
 
+0.13.0 - 2022-06-22
+-------------------
+
+* Python 3.7 or later is now required.
+
+* ``setUpModule`` and ``tearDownModule`` are now exempted by default.
+
 0.12.1 - 2021-08-06
 -------------------
 

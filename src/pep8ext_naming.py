@@ -13,7 +13,7 @@ try:
 except ImportError:
     from flake8.util import ast, iter_child_nodes
 
-__version__ = '0.12.1'
+__version__ = '0.13.0'
 
 PYTHON_VERSION = sys.version_info[:3]
 
