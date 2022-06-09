@@ -56,7 +56,7 @@ These error codes are emitted:
 +---------+-----------------------------------------------------------------+
 | _`N811` | constant imported as non constant (`constants`_)                |
 +---------+-----------------------------------------------------------------+
-| _`N812` | lowercase imported as non-lowercase                             |
+| _`N812` | lowercase imported as non lowercase                             |
 +---------+-----------------------------------------------------------------+
 | _`N813` | camelcase imported as lowercase                                 |
 +---------+-----------------------------------------------------------------+
@@ -73,6 +73,9 @@ These error codes are emitted:
 +---------+-----------------------------------------------------------------+
 | _`N818` | error suffix in exception names (`exceptions`_)                 |
 +---------+-----------------------------------------------------------------+
+| _`N819` | package or module imported as non lowercase                     |
+|         | (`package and module names`_)                                   |
++---------+-----------------------------------------------------------------+
 
 .. _class names: https://www.python.org/dev/peps/pep-0008/#class-names
 .. _constants: https://www.python.org/dev/peps/pep-0008/#constants
@@ -80,7 +83,7 @@ These error codes are emitted:
 .. _function names: https://www.python.org/dev/peps/pep-0008/#function-and-variable-names
 .. _function arguments: https://www.python.org/dev/peps/pep-0008/#function-and-method-arguments
 .. _method names: https://www.python.org/dev/peps/pep-0008/#method-names-and-instance-variables
-
+.. _package and module names: https://peps.python.org/pep-0008/#package-and-module-names
 Options
 -------
 

@@ -390,6 +390,7 @@ class ImportAsCheck(BaseASTCheck):
     N813 = "camelcase '{name}' imported as lowercase '{asname}'"
     N814 = "camelcase '{name}' imported as constant '{asname}'"
     N817 = "camelcase '{name}' imported as acronym '{asname}'"
+    N819 = "package or module '{name}' imported as non lowercase '{asname}'"
 
     def visit_importfrom(self, node, parents, ignore=None):
         for name in node.names:
@@ -412,7 +413,13 @@ class ImportAsCheck(BaseASTCheck):
                 else:
                     yield self.err(node, 'N814', **err_kwargs)
 
-    visit_import = visit_importfrom
+    def visit_import(self, node, parents, ignore=None):
+        for name in node.names:
+            asname = name.asname
+            if not asname:
+                continue
+            if asname.lower() != asname:
+                yield self.err(node, 'N819', name=name.name, asname=asname)
 
 
 class VariablesCheck(BaseASTCheck):
