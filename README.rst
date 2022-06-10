@@ -54,6 +54,9 @@ These error codes are emitted:
 +---------+-----------------------------------------------------------------+
 | _`N807` | function name should not start and end with '__'                |
 +---------+-----------------------------------------------------------------+
+| _`N810` | package or module imported as non lowercase                     |
+|         | (`package and module names`_)                                   |
++---------+-----------------------------------------------------------------+
 | _`N811` | constant imported as non constant (`constants`_)                |
 +---------+-----------------------------------------------------------------+
 | _`N812` | lowercase imported as non lowercase                             |
@@ -72,9 +75,6 @@ These error codes are emitted:
 |         | (distinct from `N814`_ for selective enforcement)               |
 +---------+-----------------------------------------------------------------+
 | _`N818` | error suffix in exception names (`exceptions`_)                 |
-+---------+-----------------------------------------------------------------+
-| _`N819` | package or module imported as non lowercase                     |
-|         | (`package and module names`_)                                   |
 +---------+-----------------------------------------------------------------+
 
 .. _class names: https://www.python.org/dev/peps/pep-0008/#class-names
