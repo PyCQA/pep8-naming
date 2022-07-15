@@ -13,7 +13,7 @@ try:
 except ImportError:
     from flake8.util import ast, iter_child_nodes
 
-__version__ = '0.13.0'
+__version__ = '0.13.1'
 
 PYTHON_VERSION = sys.version_info[:3]
 
@@ -133,7 +133,7 @@ class NamingChecker:
             parse_from_config=True,
             comma_separated_list=True,
             help='List of names or glob patterns the pep8-naming '
-            'plugin should ignore. (Defaults to %default)',
+            'plugin should ignore. (Defaults to %(default)s)',
         )
         parser.add_option(
             '--classmethod-decorators',
@@ -142,7 +142,7 @@ class NamingChecker:
             comma_separated_list=True,
             help='List of method decorators pep8-naming plugin '
             'should consider classmethods (Defaults to '
-            '%default)',
+            '%(default)s)',
         )
         parser.add_option(
             '--staticmethod-decorators',
@@ -151,7 +151,7 @@ class NamingChecker:
             comma_separated_list=True,
             help='List of method decorators pep8-naming plugin '
             'should consider staticmethods (Defaults to '
-            '%default)',
+            '%(default)s)',
         )
         parser.extend_default_ignore(['N818'])
 
