@@ -1,6 +1,11 @@
 Changes
 =======
 
+0.13.1 - 2022-07-15
+-------------------
+
+* Fix warnings related to deprecated options syntax.
+
 0.13.0 - 2022-06-22
 -------------------
 
