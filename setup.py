@@ -44,6 +44,7 @@ setup(
     py_modules=['pep8ext_naming'],
     install_requires=['flake8>=3.9.1'],
     zip_safe=False,
+    python_requires='>=3.7',
     entry_points={
         'flake8.extension': [
             'N8 = pep8ext_naming:NamingChecker',
