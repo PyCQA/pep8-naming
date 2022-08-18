@@ -3,6 +3,7 @@ import platform
 import re
 import sys
 
+import flake8
 from flake8.options.manager import OptionManager
 import pep8ext_naming
 
@@ -71,16 +72,20 @@ def load_tests(lines):
 
 def parse_options(checker, options):
     """Parse the CLI-style flags from `options` and expose to `checker`"""
-    options_manager = OptionManager('flake8', version=pep8ext_naming.__version__)
+    options_manager = OptionManager(
+        version=flake8.__version__,
+        plugin_versions=f"naming: {pep8ext_naming.__version__}",
+        parents=[],
+    )
     options_manager.add_option('--select', default=[])
     options_manager.add_option('--extended-default-select', default=['N'])
-    options_manager.add_option('--extend-select', default=[])
+    options_manager.add_option('--extend-select', default=['N'])
     options_manager.add_option('--ignore', default=[])
     options_manager.add_option('--extend-ignore', default=[])
     options_manager.add_option('--enable-extensions', default=[])
     options_manager.add_option('--extended-default-ignore', default=[])
     checker.add_options(options_manager)
-    processed_options, _ = options_manager.parse_args(options)
+    processed_options = options_manager.parse_args(options)
     checker.parse_options(processed_options)
 
 
