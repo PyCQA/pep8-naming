@@ -1,17 +1,13 @@
 """Checker of PEP-8 Naming Conventions."""
+import ast
 import sys
+from ast import iter_child_nodes
 from collections import deque
 from fnmatch import fnmatch
 from functools import partial
 from itertools import chain
 
 from flake8 import style_guide
-
-try:
-    import ast
-    from ast import iter_child_nodes
-except ImportError:
-    from flake8.util import ast, iter_child_nodes
 
 __version__ = '0.13.1'
 
