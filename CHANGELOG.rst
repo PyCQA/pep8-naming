@@ -1,6 +1,11 @@
 Changes
 =======
 
+0.13.2 - 2022-08-19
+-------------------
+
+* Formally require Python 3.7 or later using ``python_requires``.
+
 0.13.1 - 2022-07-15
 -------------------
 
