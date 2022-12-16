@@ -72,10 +72,17 @@ def load_tests(lines):
 
 def parse_options(checker, options):
     """Parse the CLI-style flags from `options` and expose to `checker`"""
+    extra_kwargs = {}
+    if int(flake8.__version__.split('.')) >= 6:
+        extra_kwargs = {
+            "formatter_names": []
+        }
+
     options_manager = OptionManager(
         version=flake8.__version__,
         plugin_versions=f"naming: {pep8ext_naming.__version__}",
         parents=[],
+        **extra_kwargs,
     )
     options_manager.add_option('--select', default=[])
     options_manager.add_option('--extended-default-select', default=['N'])
