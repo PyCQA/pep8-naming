@@ -73,7 +73,7 @@ def load_tests(lines):
 def parse_options(checker, options):
     """Parse the CLI-style flags from `options` and expose to `checker`"""
     extra_kwargs = {}
-    if int(flake8.__version__.split('.')[0]) >= 6:
+    if flake8.__version_info__[0] >= 6:
         extra_kwargs = {
             "formatter_names": []
         }
