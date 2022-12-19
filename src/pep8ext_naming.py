@@ -9,7 +9,7 @@ from itertools import chain
 
 from flake8 import style_guide
 
-__version__ = '0.13.2'
+__version__ = '0.13.3'
 
 PYTHON_VERSION = sys.version_info[:3]
 

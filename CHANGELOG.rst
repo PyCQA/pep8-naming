@@ -1,6 +1,12 @@
 Changes
 =======
 
+0.13.3 - 2022-12-19
+-------------------
+
+* Formally require flake8 5.0.0 or later.
+* Add support for Python 3.11.
+
 0.13.2 - 2022-08-19
 -------------------
 
