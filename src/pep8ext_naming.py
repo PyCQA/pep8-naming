@@ -395,9 +395,7 @@ class ImportAsCheck(BaseASTCheck):
     def visit_import(self, node, parents, ignore=None):
         for name in node.names:
             asname = name.asname
-            if not asname:
-                continue
-            if asname.lower() != asname:
+            if asname and asname.lower() != asname:
                 yield self.err(node, 'N810', name=name.name, asname=asname)
 
     def visit_importfrom(self, node, parents, ignore=None):
