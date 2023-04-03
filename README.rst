@@ -103,3 +103,19 @@ The following flake8 options are added:
                             Used to prevent false N805 errors.
 
                             Default: ``staticmethod``.
+
+FAQ
+---
+
+How do I configure ``classmethod_decorators`` to recognize `SQLAlchemy`_ class methods?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+::
+
+    classmethod_decorators =
+        classmethod
+        declared_attr
+        expression
+        comparator
+
+.. _SQLAlchemy: https://www.sqlalchemy.org/
