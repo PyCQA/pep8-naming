@@ -317,12 +317,25 @@ class FunctionNameCheck(BaseASTCheck):
     N802 = "function name '{name}' should be lowercase"
     N807 = "function name '{name}' should not start and end with '__'"
 
+    @staticmethod
+    def has_override_decorator(node):
+        for d in node.decorator_list:
+            if isinstance(d, ast.Name) and d.id == 'override':
+                return True
+            if (isinstance(d, ast.Attribute) and isinstance(d.value, ast.Name)
+                    and d.value.id == 'typing' and d.attr == 'override'):
+                return True
+        return False
+
     def visit_functiondef(self, node, parents, ignore=None):
         function_type = getattr(node, 'function_type', _FunctionType.FUNCTION)
         name = node.name
         if _ignored(name, ignore):
             return
         if name in ('__dir__', '__getattr__'):
+            return
+        if (function_type != _FunctionType.FUNCTION
+                and self.has_override_decorator(node)):
             return
         if name.lower() != name:
             yield self.err(node, 'N802', name=name)

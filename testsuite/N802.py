@@ -53,6 +53,14 @@ class ClassName:
     def notOk(self):
         pass
 #: Okay
+class ClassName:
+    @override
+    def notOk(self):
+        pass
+    @typing.override
+    def alsoNotOk(self):
+        pass
+#: Okay
 def setUp():
     pass
 
