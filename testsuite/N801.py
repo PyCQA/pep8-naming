@@ -7,6 +7,9 @@ class notok:
 #: Okay(--ignore-names=*ok)
 class notok:
     pass
+#: N801:1:7(--ignore-names=*OK)
+class notok:
+    pass
 #: N801
 class Good:
     class notok:

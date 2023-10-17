@@ -40,6 +40,9 @@ def b13(BAD, *VERYBAD, **EXTRABAD):
 #: Okay(--ignore-names=*BAD)
 def b13(BAD, *VERYBAD, **EXTRABAD):
     pass
+#: N803:1:9(--ignore-names=*bad)
+def b13(BAD):
+    pass
 #: N803:1:9
 def b14(BAD):
     pass

@@ -31,6 +31,9 @@ def test():
 #: Okay(--ignore-names=B*)
 def test():
     Bad = 1
+#: N806(--ignore-names=b*)
+def test():
+    Bad = 1
 #: Okay
 def good():
     global Bad

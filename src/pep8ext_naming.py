@@ -3,7 +3,7 @@ import ast
 import sys
 from ast import iter_child_nodes
 from collections import deque
-from fnmatch import fnmatch
+from fnmatch import fnmatchcase
 from functools import partial
 from itertools import chain
 
@@ -68,7 +68,7 @@ def _err(self, node, code, **kwargs):
 
 
 def _ignored(name, ignore):
-    return any(fnmatch(name, i) for i in ignore)
+    return any(fnmatchcase(name, i) for i in ignore)
 
 
 BaseASTCheck = _ASTCheckMeta('BaseASTCheck', (object,),

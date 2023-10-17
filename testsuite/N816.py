@@ -22,6 +22,8 @@ C_6 = 0.
 mixedCase = 0
 #: Okay(--ignore-names=*Case)
 mixedCase = 0
+#: N816(--ignore-names=*case)
+mixedCase = 0
 #: Okay
 Γ = 1
 #: N816

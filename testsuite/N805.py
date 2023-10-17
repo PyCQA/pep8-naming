@@ -26,6 +26,10 @@ class Foo:
 class GraphQLNode:
     def resolve_foo(source, info):
         pass
+#: N805(--ignore-names=SOURCE)
+class GraphQLNode:
+    def resolve_foo(source, info):
+        pass
 #: Okay
 class Foo:
     def __new__(cls):
