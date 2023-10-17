@@ -52,6 +52,9 @@ def __bad__():
 #: Okay(--ignore-names=__*)
 def __bad__():
     pass
+#: N807(--ignore-names=__B*)
+def __bad__():
+    pass
 #: Okay
 def __dir__():
     pass

@@ -25,6 +25,9 @@ def NotOK():
 #: Okay(--ignore-names=*OK)
 def NotOK():
     pass
+#: N802:1:5(--ignore-names=*ok)
+def NotOK():
+    pass
 #: Okay
 def _():
     pass

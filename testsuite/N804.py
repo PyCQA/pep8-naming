@@ -21,6 +21,11 @@ class SpecialConventionCase:
     @classmethod
     def prepare_meta(klass, root):
         pass
+#: N804(--ignore-names=KLASS)
+class SpecialConventionCase:
+    @classmethod
+    def prepare_meta(klass, root):
+        pass
 #: Okay(--ignore-names=_*)
 class SpecialConventionCase:
     @classmethod

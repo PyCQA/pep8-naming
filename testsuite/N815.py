@@ -25,3 +25,6 @@ class C:
 #: Okay(--ignore-names=*Case)
 class C:
     mixed_Case = 0
+#: N815(--ignore-names=*case)
+class C:
+    mixed_Case = 0
