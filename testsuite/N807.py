@@ -46,11 +46,11 @@ class ClassName:
     def method(self):
         def __bad__():
             pass
-#: Okay(--ignore-names=__bad)
-def __bad():
+#: Okay(--ignore-names=__bad__)
+def __bad__():
     pass
 #: Okay(--ignore-names=__*)
-def __bad():
+def __bad__():
     pass
 #: Okay
 def __dir__():
