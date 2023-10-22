@@ -31,11 +31,6 @@ METHOD_CONTAINER_NODES = {
 FUNC_NODES = (ast.FunctionDef, ast.AsyncFunctionDef)
 
 
-def get_arg_name_tuples(node):
-    groups = (node.args.posonlyargs, node.args.args, node.args.kwonlyargs)
-    return [(arg, arg.arg) for args in groups for arg in args]
-
-
 class _ASTCheckMeta(type):
     def __init__(cls, class_name, bases, namespace):
         cls.codes = tuple(code for code in namespace if code.startswith('N'))
@@ -347,33 +342,36 @@ class FunctionArgNamesCheck(BaseASTCheck):
     N805 = "first argument of a method should be named 'self'"
 
     def visit_functiondef(self, node, parents: Iterable, ignore=None):
+        args = node.args.posonlyargs + node.args.args + node.args.kwonlyargs
 
-        def arg_name(arg):
-            return (arg, arg.arg) if arg else (node, arg)
+        # Start by applying checks that are specific to the first argument.
+        #
+        # Note: The `ignore` check shouldn't be necessary here because we'd
+        #       expect users to explicitly ignore N804/N805 when using names
+        #       other than `self` and `cls` rather than ignoring names like
+        #       `klass` to get around these checks. However, a previous
+        #       implementation allowed for that, so we retain that behavior
+        #       for backwards compatibility.
+        if args and (name := args[0].arg) and not _ignored(name, ignore):
+            function_type = getattr(node, 'function_type', None)
+            if function_type == _FunctionType.METHOD and name != 'self':
+                yield self.err(args[0], 'N805')
+            elif function_type == _FunctionType.CLASSMETHOD and name != 'cls':
+                yield self.err(args[0], 'N804')
 
-        for arg, name in arg_name(node.args.vararg), arg_name(node.args.kwarg):
-            if name is None or _ignored(name, ignore):
-                continue
-            if name.lower() != name:
-                yield self.err(arg, 'N803', name=name)
-                return
+        # Also add the special *arg and **kwarg arguments for the rest of the
+        # checks when they're present. We didn't include them above because
+        # the "first argument" naming checks shouldn't be applied to them
+        # when they're the function's only argument(s).
+        if node.args.vararg:
+            args.append(node.args.vararg)
+        if node.args.kwarg:
+            args.append(node.args.kwarg)
 
-        arg_name_tuples = get_arg_name_tuples(node)
-        if not arg_name_tuples:
-            return
-        arg0, name0 = arg_name_tuples[0]
-        function_type = getattr(node, 'function_type', _FunctionType.FUNCTION)
-
-        if function_type == _FunctionType.METHOD:
-            if name0 != 'self' and not _ignored(name0, ignore):
-                yield self.err(arg0, 'N805')
-        elif function_type == _FunctionType.CLASSMETHOD:
-            if name0 != 'cls' and not _ignored(name0, ignore):
-                yield self.err(arg0, 'N804')
-        for arg, name in arg_name_tuples:
+        for arg in args:
+            name = arg.arg
             if name.lower() != name and not _ignored(name, ignore):
                 yield self.err(arg, 'N803', name=name)
-                return
 
     visit_asyncfunctiondef = visit_functiondef
 
