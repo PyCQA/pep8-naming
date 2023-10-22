@@ -53,3 +53,7 @@ async for Γ1 in iterator:
 #: N816
 async for γΓ1 in iterator:
     pass
+#: Okay
+lambda f: (TheName := namedtuple('TheName', 'a b c')), TheName
+#: N816:1:15:
+lambda line: (BaD_WaLRuS := re.match(pattern, line)) and BaD_WaLRuS.group(1)
