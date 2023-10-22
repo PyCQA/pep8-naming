@@ -1,6 +1,5 @@
 """Checker of PEP-8 Naming Conventions."""
 import ast
-import sys
 from ast import iter_child_nodes
 from collections import deque
 from fnmatch import fnmatchcase
@@ -10,8 +9,6 @@ from itertools import chain
 from flake8 import style_guide
 
 __version__ = '0.13.3'
-
-PYTHON_VERSION = sys.version_info[:3]
 
 CLASS_METHODS = frozenset((
     '__new__',
@@ -32,14 +29,10 @@ METHOD_CONTAINER_NODES = {
 }
 FUNC_NODES = (ast.FunctionDef, ast.AsyncFunctionDef)
 
-if PYTHON_VERSION < (3, 8):
-    def get_arg_name_tuples(node):
-        groups = (node.args.args, node.args.kwonlyargs)
-        return [(arg, arg.arg) for args in groups for arg in args]
-else:
-    def get_arg_name_tuples(node):
-        groups = (node.args.posonlyargs, node.args.args, node.args.kwonlyargs)
-        return [(arg, arg.arg) for args in groups for arg in args]
+
+def get_arg_name_tuples(node):
+    groups = (node.args.posonlyargs, node.args.args, node.args.kwonlyargs)
+    return [(arg, arg.arg) for args in groups for arg in args]
 
 
 class _ASTCheckMeta(type):
@@ -54,12 +47,8 @@ class _ASTCheckMeta(type):
 def _err(self, node, code, **kwargs):
     lineno, col_offset = node.lineno, node.col_offset
     if isinstance(node, ast.ClassDef):
-        if PYTHON_VERSION < (3, 8):
-            lineno += len(node.decorator_list)
         col_offset += 6
     elif isinstance(node, FUNC_NODES):
-        if PYTHON_VERSION < (3, 8):
-            lineno += len(node.decorator_list)
         col_offset += 4
     code_str = getattr(self, code)
     if kwargs:
