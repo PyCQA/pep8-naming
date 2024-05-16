@@ -1,6 +1,14 @@
 Changes
 =======
 
+0.14.0 - 2024-05-16
+-------------------
+
+* Drop support for Python 3.7.
+* Add support for Python 3.12.
+* Ignore methods decorated by ``@typing.override``.
+* Perform case-sensitive ``ignore-names`` globbing on all platforms.
+
 0.13.3 - 2022-12-19
 -------------------
 
