@@ -9,7 +9,7 @@ from itertools import chain
 
 from flake8 import style_guide
 
-__version__ = '0.14.0'
+__version__ = '0.14.1'
 
 CLASS_METHODS = frozenset((
     '__new__',
