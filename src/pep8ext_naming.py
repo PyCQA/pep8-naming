@@ -254,6 +254,7 @@ class ClassNameCheck(BaseASTCheck):
     Classes for internal use have a leading underscore in addition.
     """
     N801 = "class name '{name}' should use CapWords convention"
+    N808 = "type variable name '{name}' should use CapWords convention and an optional suffix '_co' or '_contra'"
     N818 = "exception name '{name}' should be named with an Error suffix"
 
     @classmethod
@@ -274,6 +275,28 @@ class ClassNameCheck(BaseASTCheck):
                 names.add(base.id)
                 names.update(cls.superclass_names(base.id, parents, names))
         return names
+
+    def visit_module(self, node, parents: Iterable, ignore=None):
+        for body in node.body:
+            try:
+                if hasattr(body, 'targets') and len(body.targets) == 1:
+                    name = body.targets[0].id
+                    func_name = body.value.func.id
+            except AttributeError:
+                continue
+
+            if _ignored(name, ignore) or func_name != "TypeVar":
+                return
+
+            if not name[:1].isupper():
+                yield self.err(body, 'N808', name=name)
+            elif '_' in name:
+                underscore_split = name.split('_')
+                suffix = underscore_split[-1]
+                if len(underscore_split) > 2 or (suffix != 'co' and suffix != 'contra'):
+                    yield self.err(body, 'N808', name=name)
+
+
 
     def visit_classdef(self, node, parents: Iterable, ignore=None):
         name = node.name
