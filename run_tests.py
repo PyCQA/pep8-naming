@@ -24,9 +24,6 @@ def main():
     test_count = 0
     errors = 0
     for filename in os.listdir('testsuite'):
-        if filename != "N808.py":
-            continue
-
         filepath = os.path.join('testsuite', filename)
         with open(filepath, encoding='utf8') as fd:
             lines = list(fd)
