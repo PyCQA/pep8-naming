@@ -24,6 +24,15 @@ Ok_contra = TypeVar("Ok_contra", contravariant=True)
 #: N808
 Ok__contra = TypeVar("Ok__contra", contravariant=True)
 
+#: N808
+Var_contra = TypeVar("Var_contra", covariant=True)
+
+#: N808
+Var_co = TypeVar("Var_co", contravariant=True)
+
+#: N808
+Var = TypeVar("Var", covariant=True)
+
 #: Okay
 Ok_co = TypeVar("Ok_co")
 

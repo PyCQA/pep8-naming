@@ -283,20 +283,27 @@ class ClassNameCheck(BaseASTCheck):
                     continue
                 name = body.targets[0].id
                 func_name = body.value.func.id
+                keywords = {kw.arg: kw.value.value  for kw in body.value.keywords}
             except AttributeError:
                 continue
 
-            if _ignored(name, ignore) or func_name != "TypeVar":
+            if func_name != "TypeVar" or _ignored(name, ignore):
                 return
 
             if not name[:1].isupper():
                 yield self.err(body, 'N808', name=name)
-            elif '_' in name:
-                underscore_split = name.split('_')
-                suffix = underscore_split[-1]
-                if len(underscore_split) > 2 or (suffix != 'co' and suffix != 'contra'):
-                    yield self.err(body, 'N808', name=name)
 
+            parts = name.split('_')
+            if len(parts) > 2:
+                yield self.err(body, 'N808', name=name)
+
+            suffix = parts[-1] if len(parts) > 1 else ''
+            if suffix and suffix != 'co' and suffix != 'contra':
+                yield self.err(body, 'N808', name=name)
+            elif keywords.get('covariant') and suffix != 'co':
+                yield self.err(body, 'N808', name=name)
+            elif keywords.get('contravariant') and suffix != 'contra':
+                yield self.err(body, 'N808', name=name)
 
 
     def visit_classdef(self, node, parents: Iterable, ignore=None):
