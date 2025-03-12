@@ -51,6 +51,30 @@ __NotGood__ = TypeVar("__NotGood__")
 #: N808
 NotGood__ = TypeVar("NotGood__")
 
+#: Okay
+A = TypeVar("A")
+
+#: Okay
+A_contra = TypeVar("A_contra")
+
+#: N808
+A = TypeVar("B")
+
+#: N808
+A_contra = TypeVar("B")
+
+#: N808
+A_contra = TypeVar("B_contra")
+
+#: N808
+A_contra = TypeVar("A_Contra")
+
+#: N808
+A_contra = TypeVar()
+
+
 # Make sure other function calls do not get checked
 #: Okay
 t = str('something')
+t = TypeVar
+

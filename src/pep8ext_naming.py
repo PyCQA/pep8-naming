@@ -279,16 +279,20 @@ class ClassNameCheck(BaseASTCheck):
     def visit_module(self, node, parents: Iterable, ignore=None):
         for body in node.body:
             try:
-                if not len(body.targets) == 1:
+                if len(body.targets) != 1:
                     continue
                 name = body.targets[0].id
                 func_name = body.value.func.id
-                keywords = {kw.arg: kw.value.value  for kw in body.value.keywords}
+                args = [a.value for a in body.value.args]
+                keywords = {kw.arg: kw.value.value for kw in body.value.keywords}
             except AttributeError:
                 continue
 
             if func_name != "TypeVar" or _ignored(name, ignore):
                 return
+
+            if len(args) == 0 or args[0] != name:
+                yield self.err(body, 'N808', name=name)
 
             if not name[:1].isupper():
                 yield self.err(body, 'N808', name=name)
