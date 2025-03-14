@@ -54,6 +54,9 @@ These error codes are emitted:
 +---------+-----------------------------------------------------------------+
 | _`N807` | function name should not start and end with '__'                |
 +---------+-----------------------------------------------------------------+
+| _`N808` | type variable names should use CapWords convention and an       |
+|         | optional suffix '_co' or '_contra' (`type variable names`_)     |
++---------+-----------------------------------------------------------------+
 | _`N811` | constant imported as non constant (`constants`_)                |
 +---------+-----------------------------------------------------------------+
 | _`N812` | lowercase imported as non-lowercase                             |
@@ -80,6 +83,7 @@ These error codes are emitted:
 .. _function names: https://www.python.org/dev/peps/pep-0008/#function-and-variable-names
 .. _function arguments: https://www.python.org/dev/peps/pep-0008/#function-and-method-arguments
 .. _method names: https://www.python.org/dev/peps/pep-0008/#method-names-and-instance-variables
+.. _type variable names: https://peps.python.org/pep-0008/#type-variable-names
 
 Options
 -------

@@ -254,6 +254,7 @@ class ClassNameCheck(BaseASTCheck):
     Classes for internal use have a leading underscore in addition.
     """
     N801 = "class name '{name}' should use CapWords convention"
+    N808 = "type variable name '{name}' should use CapWords convention and an optional suffix '_co' or '_contra'"
     N818 = "exception name '{name}' should be named with an Error suffix"
 
     @classmethod
@@ -274,6 +275,40 @@ class ClassNameCheck(BaseASTCheck):
                 names.add(base.id)
                 names.update(cls.superclass_names(base.id, parents, names))
         return names
+
+    def visit_module(self, node, parents: Iterable, ignore=None):
+        for body in node.body:
+            try:
+                if len(body.targets) != 1:
+                    continue
+                name = body.targets[0].id
+                func_name = body.value.func.id
+                args = [a.value for a in body.value.args]
+                keywords = {kw.arg: kw.value.value for kw in body.value.keywords}
+            except AttributeError:
+                continue
+
+            if func_name != "TypeVar" or _ignored(name, ignore):
+                continue
+
+            if len(args) == 0 or args[0] != name:
+                yield self.err(body, 'N808', name=name)
+
+            if not name[:1].isupper():
+                yield self.err(body, 'N808', name=name)
+
+            parts = name.split('_')
+            if len(parts) > 2:
+                yield self.err(body, 'N808', name=name)
+
+            suffix = parts[-1] if len(parts) > 1 else ''
+            if suffix and suffix != 'co' and suffix != 'contra':
+                yield self.err(body, 'N808', name=name)
+            elif keywords.get('covariant') and suffix != 'co':
+                yield self.err(body, 'N808', name=name)
+            elif keywords.get('contravariant') and suffix != 'contra':
+                yield self.err(body, 'N808', name=name)
+
 
     def visit_classdef(self, node, parents: Iterable, ignore=None):
         name = node.name
