@@ -289,7 +289,7 @@ class ClassNameCheck(BaseASTCheck):
                 continue
 
             if func_name != "TypeVar" or _ignored(name, ignore):
-                return
+                continue
 
             if len(args) == 0 or args[0] != name:
                 yield self.err(body, 'N808', name=name)
