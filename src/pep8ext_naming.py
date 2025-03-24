@@ -31,33 +31,31 @@ METHOD_CONTAINER_NODES = {
 FUNC_NODES = (ast.FunctionDef, ast.AsyncFunctionDef)
 
 
-class _ASTCheckMeta(type):
-    def __init__(cls, class_name, bases, namespace):
-        cls.codes = tuple(code for code in namespace if code.startswith('N'))
-        try:
-            cls.all.append(cls())
-        except AttributeError:
-            cls.all = []
+class BaseASTCheck:
+    """Base for AST Checks."""
 
+    all: list['BaseASTCheck'] = []
+    codes: tuple[str, ...]
 
-def _err(self, node, code, **kwargs):
-    lineno, col_offset = node.lineno, node.col_offset
-    if isinstance(node, ast.ClassDef):
-        col_offset += 6
-    elif isinstance(node, FUNC_NODES):
-        col_offset += 4
-    code_str = getattr(self, code)
-    if kwargs:
-        code_str = code_str.format(**kwargs)
-    return lineno, col_offset + 1, f'{code} {code_str}', self
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        cls.all.append(cls())
+        cls.codes = tuple(code for code in dir(cls) if code.startswith('N'))
+
+    def err(self, node, code: str, **kwargs):
+        lineno, col_offset = node.lineno, node.col_offset
+        if isinstance(node, ast.ClassDef):
+            col_offset += 6
+        elif isinstance(node, FUNC_NODES):
+            col_offset += 4
+        code_str = getattr(self, code)
+        if kwargs:
+            code_str = code_str.format(**kwargs)
+        return lineno, col_offset + 1, f'{code} {code_str}', self
 
 
 def _ignored(name, ignore):
     return any(fnmatchcase(name, i) for i in ignore)
-
-
-BaseASTCheck = _ASTCheckMeta('BaseASTCheck', (object,),
-                             {'__doc__': "Base for AST Checks.", 'err': _err})
 
 
 class _FunctionType:
