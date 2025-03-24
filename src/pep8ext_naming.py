@@ -6,6 +6,7 @@ from collections.abc import Iterable
 from fnmatch import fnmatchcase
 from functools import partial
 from itertools import chain
+from typing import List, Tuple
 
 from flake8 import style_guide
 
@@ -34,8 +35,8 @@ FUNC_NODES = (ast.FunctionDef, ast.AsyncFunctionDef)
 class BaseASTCheck:
     """Base for AST Checks."""
 
-    all: list['BaseASTCheck'] = []
-    codes: tuple[str, ...]
+    all: List['BaseASTCheck'] = []
+    codes: Tuple[str, ...]
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
