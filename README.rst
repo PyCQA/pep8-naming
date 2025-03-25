@@ -55,7 +55,7 @@ These error codes are emitted:
 | _`N807` | function name should not start and end with '__'                |
 +---------+-----------------------------------------------------------------+
 | _`N808` | type variable names should use CapWords convention and an       |
-|         | optional suffix '_co' or '_contra' (`type variable names`_)     |
+|         | optional '_co' or '_contra' suffix (`type variable names`_)     |
 +---------+-----------------------------------------------------------------+
 | _`N811` | constant imported as non constant (`constants`_)                |
 +---------+-----------------------------------------------------------------+
