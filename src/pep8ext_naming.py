@@ -54,8 +54,11 @@ class BaseASTCheck:
         return lineno, col_offset + 1, f'{code} {code_str}', self
 
 
-def _ignored(name, ignore):
-    return any(fnmatchcase(name, i) for i in ignore)
+class NameSet(frozenset[str]):
+    """A set of names that are matched using fnmatchcase."""
+
+    def __contains__(self, item) -> bool:
+        return any(fnmatchcase(item, name) for name in self)
 
 
 class _FunctionType:
@@ -65,7 +68,7 @@ class _FunctionType:
     METHOD = 'method'
 
 
-_default_ignore_names = [
+_default_ignored_names = [
         'setUp',
         'tearDown',
         'setUpClass',
@@ -98,7 +101,7 @@ class NamingChecker:
     visitors = BaseASTCheck.all
     decorator_to_type = _build_decorator_to_type(
         _default_classmethod_decorators, _default_staticmethod_decorators)
-    ignore_names = frozenset(_default_ignore_names)
+    ignored = NameSet(_default_ignored_names)
 
     def __init__(self, tree, filename):
         self.tree = tree
@@ -107,7 +110,7 @@ class NamingChecker:
     def add_options(cls, parser):
         parser.add_option(
             '--ignore-names',
-            default=_default_ignore_names,
+            default=_default_ignored_names,
             parse_from_config=True,
             comma_separated_list=True,
             help='List of names or glob patterns the pep8-naming '
@@ -135,14 +138,14 @@ class NamingChecker:
 
     @classmethod
     def parse_options(cls, options):
-        cls.ignore_names = frozenset(options.ignore_names)
+        cls.ignored = NameSet(options.ignore_names)
         cls.decorator_to_type = _build_decorator_to_type(
             options.classmethod_decorators,
             options.staticmethod_decorators)
 
-        # Build a list of node visitors based the error codes that have been
-        # selected in the style guide. Only the checks that have been selected
-        # will be evaluated as a performance optimization.
+        # Rebuild the list of node visitors based the error codes that have
+        # been selected in the style guide. Only the checks that have been
+        # selected will be evaluated as a performance optimization.
         engine = style_guide.DecisionEngine(options)
         cls.visitors = frozenset(
             visitor for visitor in BaseASTCheck.all for code in visitor.codes
@@ -166,12 +169,12 @@ class NamingChecker:
             self.find_global_defs(node)
 
         method = 'visit_' + node.__class__.__name__.lower()
-        ignore_names = self.ignore_names
+        ignored = self.ignored
         for visitor in self.visitors:
             visitor_method = getattr(visitor, method, None)
             if visitor_method is None:
                 continue
-            yield from visitor_method(node, parents, ignore_names)
+            yield from visitor_method(node, parents, ignored)
 
     def tag_class_functions(self, cls_node):
         """Tag functions if they are methods, classmethods, staticmethods"""
@@ -273,9 +276,9 @@ class ClassNameCheck(BaseASTCheck):
                 names.update(cls.superclass_names(base.id, parents, names))
         return names
 
-    def visit_classdef(self, node, parents: Iterable, ignore=None):
+    def visit_classdef(self, node, parents: Iterable, ignored: NameSet):
         name = node.name
-        if _ignored(name, ignore):
+        if name in ignored:
             return
         name = name.strip('_')
         if not name[:1].isupper() or '_' in name:
@@ -308,10 +311,10 @@ class FunctionNameCheck(BaseASTCheck):
                 return True
         return False
 
-    def visit_functiondef(self, node, parents: Iterable, ignore=None):
+    def visit_functiondef(self, node, parents: Iterable, ignored: NameSet):
         function_type = getattr(node, 'function_type', _FunctionType.FUNCTION)
         name = node.name
-        if _ignored(name, ignore):
+        if name in ignored:
             return
         if name in ('__dir__', '__getattr__'):
             return
@@ -339,18 +342,18 @@ class FunctionArgNamesCheck(BaseASTCheck):
     N804 = "first argument of a classmethod should be named 'cls'"
     N805 = "first argument of a method should be named 'self'"
 
-    def visit_functiondef(self, node, parents: Iterable, ignore=None):
+    def visit_functiondef(self, node, parents: Iterable, ignored: NameSet):
         args = node.args.posonlyargs + node.args.args + node.args.kwonlyargs
 
         # Start by applying checks that are specific to the first argument.
         #
-        # Note: The `ignore` check shouldn't be necessary here because we'd
+        # Note: The `ignored` check shouldn't be necessary here because we'd
         #       expect users to explicitly ignore N804/N805 when using names
         #       other than `self` and `cls` rather than ignoring names like
         #       `klass` to get around these checks. However, a previous
         #       implementation allowed for that, so we retain that behavior
         #       for backwards compatibility.
-        if args and (name := args[0].arg) and not _ignored(name, ignore):
+        if args and (name := args[0].arg) and name not in ignored:
             function_type = getattr(node, 'function_type', None)
             if function_type == _FunctionType.METHOD and name != 'self':
                 yield self.err(args[0], 'N805')
@@ -368,7 +371,7 @@ class FunctionArgNamesCheck(BaseASTCheck):
 
         for arg in args:
             name = arg.arg
-            if name.lower() != name and not _ignored(name, ignore):
+            if name.lower() != name and name not in ignored:
                 yield self.err(arg, 'N803', name=name)
 
     visit_asyncfunctiondef = visit_functiondef
@@ -384,7 +387,7 @@ class ImportAsCheck(BaseASTCheck):
     N814 = "camelcase '{name}' imported as constant '{asname}'"
     N817 = "camelcase '{name}' imported as acronym '{asname}'"
 
-    def visit_importfrom(self, node, parents: Iterable, ignore=None):
+    def visit_importfrom(self, node, parents: Iterable, ignored: NameSet):
         for name in node.names:
             asname = name.asname
             if not asname:
@@ -416,7 +419,7 @@ class VariablesCheck(BaseASTCheck):
     N815 = "variable '{name}' in class scope should not be mixedCase"
     N816 = "variable '{name}' in global scope should not be mixedCase"
 
-    def _find_errors(self, assignment_target, parents: Iterable, ignore):
+    def _find_errors(self, assignment_target, parents: Iterable, ignored: NameSet):
         for parent_func in reversed(parents):
             if isinstance(parent_func, ast.ClassDef):
                 checker = self.class_variable_check
@@ -427,7 +430,7 @@ class VariablesCheck(BaseASTCheck):
         else:
             checker = self.global_variable_check
         for name in _extract_names(assignment_target):
-            if _ignored(name, ignore):
+            if name in ignored:
                 continue
             error_code = checker(name)
             if error_code:
@@ -444,38 +447,38 @@ class VariablesCheck(BaseASTCheck):
                     return True
         return False
 
-    def visit_assign(self, node, parents: Iterable, ignore=None):
+    def visit_assign(self, node, parents: Iterable, ignored: NameSet):
         if self.is_namedtupe(node.value):
             return
         for target in node.targets:
-            yield from self._find_errors(target, parents, ignore)
+            yield from self._find_errors(target, parents, ignored)
 
-    def visit_namedexpr(self, node, parents: Iterable, ignore):
+    def visit_namedexpr(self, node, parents: Iterable, ignored: NameSet):
         if self.is_namedtupe(node.value):
             return
-        yield from self._find_errors(node.target, parents, ignore)
+        yield from self._find_errors(node.target, parents, ignored)
 
     visit_annassign = visit_namedexpr
 
-    def visit_with(self, node, parents: Iterable, ignore):
+    def visit_with(self, node, parents: Iterable, ignored: NameSet):
         for item in node.items:
             yield from self._find_errors(
-                    item.optional_vars, parents, ignore)
+                    item.optional_vars, parents, ignored)
 
     visit_asyncwith = visit_with
 
-    def visit_for(self, node, parents: Iterable, ignore):
-        yield from self._find_errors(node.target, parents, ignore)
+    def visit_for(self, node, parents: Iterable, ignored: NameSet):
+        yield from self._find_errors(node.target, parents, ignored)
 
     visit_asyncfor = visit_for
 
-    def visit_excepthandler(self, node, parents: Iterable, ignore):
+    def visit_excepthandler(self, node, parents: Iterable, ignored: NameSet):
         if node.name:
-            yield from self._find_errors(node, parents, ignore)
+            yield from self._find_errors(node, parents, ignored)
 
-    def visit_generatorexp(self, node, parents: Iterable, ignore):
+    def visit_generatorexp(self, node, parents: Iterable, ignored: NameSet):
         for gen in node.generators:
-            yield from self._find_errors(gen.target, parents, ignore)
+            yield from self._find_errors(gen.target, parents, ignored)
 
     visit_listcomp = visit_dictcomp = visit_setcomp = visit_generatorexp
 
@@ -502,7 +505,7 @@ class TypeVarNameCheck(BaseASTCheck):
     N808 = "type variable name '{name}' should use CapWords convention " \
            "and an optional '_co' or '_contra' suffix"
 
-    def visit_module(self, node, parents: Iterable, ignore=None):
+    def visit_module(self, node, parents: Iterable, ignored: NameSet):
         for body in node.body:
             try:
                 if len(body.targets) != 1:
@@ -514,7 +517,7 @@ class TypeVarNameCheck(BaseASTCheck):
             except AttributeError:
                 continue
 
-            if func_name != "TypeVar" or _ignored(name, ignore):
+            if func_name != "TypeVar" or name in ignored:
                 continue
 
             if len(args) == 0 or args[0] != name:
