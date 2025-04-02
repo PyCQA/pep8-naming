@@ -60,7 +60,7 @@ class NameSet(frozenset[str]):
 
     def __new__(cls, iterable: Iterable[str]):
         obj = super().__new__(cls, iterable)
-        obj._fnmatch = any(c in r"*?[" for name in iterable for c in name)
+        obj._fnmatch = any("*" in s or "?" in s or "[" in s for s in iterable)
         return obj
 
     def __contains__(self, item: object, /) -> bool:
