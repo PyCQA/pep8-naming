@@ -6,6 +6,7 @@ from collections.abc import Iterable
 from fnmatch import fnmatchcase
 from functools import partial
 from itertools import chain
+from typing import override
 
 from flake8 import style_guide
 
@@ -55,10 +56,20 @@ class BaseASTCheck:
 
 
 class NameSet(frozenset[str]):
-    """A set of names that are matched using fnmatchcase."""
+    """A set of names that can be matched as Unix shell-style wildcards."""
+    _fnmatch: bool = False
 
-    def __contains__(self, item) -> bool:
-        return any(fnmatchcase(item, name) for name in self)
+    @override
+    def __new__(cls, iterable: Iterable[str]):
+        obj = super().__new__(cls, iterable)
+        obj._fnmatch = any(c in r"*?[" for name in iterable for c in name)
+        return obj
+
+    @override
+    def __contains__(self, item: object, /) -> bool:
+        if self._fnmatch and isinstance(item, str):
+            return any(fnmatchcase(item, name) for name in self)
+        return super().__contains__(item)
 
 
 class _FunctionType:
