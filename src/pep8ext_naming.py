@@ -55,10 +55,18 @@ class BaseASTCheck:
 
 
 class NameSet(frozenset[str]):
-    """A set of names that are matched using fnmatchcase."""
+    """A set of names that can be matched as Unix shell-style wildcards."""
+    _fnmatch: bool = False
 
-    def __contains__(self, item) -> bool:
-        return any(fnmatchcase(item, name) for name in self)
+    def __new__(cls, iterable: Iterable[str]):
+        obj = super().__new__(cls, iterable)
+        obj._fnmatch = any("*" in s or "?" in s or "[" in s for s in iterable)
+        return obj
+
+    def __contains__(self, item: object, /) -> bool:
+        if self._fnmatch and isinstance(item, str):
+            return any(fnmatchcase(item, name) for name in self)
+        return super().__contains__(item)
 
 
 class _FunctionType:
