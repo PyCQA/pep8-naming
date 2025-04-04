@@ -2,7 +2,7 @@
 import ast
 from ast import iter_child_nodes
 from collections import deque
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
 from fnmatch import fnmatchcase
 from functools import partial
 from itertools import chain
@@ -170,7 +170,7 @@ class NamingChecker:
             yield from self.visit_tree(child, parents)
         parents.pop()
 
-    def visit_node(self, node, parents: Iterable):
+    def visit_node(self, node, parents: Sequence):
         if isinstance(node, ast.ClassDef):
             self.tag_class_functions(node)
         elif isinstance(node, FUNC_NODES):
@@ -266,14 +266,14 @@ class ClassNameCheck(BaseASTCheck):
     N818 = "exception name '{name}' should be named with an Error suffix"
 
     @classmethod
-    def get_classdef(cls, name, parents: Iterable):
+    def get_classdef(cls, name, parents: Sequence):
         for parent in parents:
             for node in parent.body:
                 if isinstance(node, ast.ClassDef) and node.name == name:
                     return node
 
     @classmethod
-    def superclass_names(cls, name, parents: Iterable, _names=None):
+    def superclass_names(cls, name, parents: Sequence, _names=None):
         names = _names or set()
         classdef = cls.get_classdef(name, parents)
         if not classdef:
@@ -284,7 +284,7 @@ class ClassNameCheck(BaseASTCheck):
                 names.update(cls.superclass_names(base.id, parents, names))
         return names
 
-    def visit_classdef(self, node, parents: Iterable, ignored: NameSet):
+    def visit_classdef(self, node, parents: Sequence, ignored: NameSet):
         name = node.name
         if name in ignored:
             return
@@ -319,7 +319,7 @@ class FunctionNameCheck(BaseASTCheck):
                 return True
         return False
 
-    def visit_functiondef(self, node, parents: Iterable, ignored: NameSet):
+    def visit_functiondef(self, node, parents: Sequence, ignored: NameSet):
         function_type = getattr(node, 'function_type', _FunctionType.FUNCTION)
         name = node.name
         if name in ignored:
@@ -350,7 +350,7 @@ class FunctionArgNamesCheck(BaseASTCheck):
     N804 = "first argument of a classmethod should be named 'cls'"
     N805 = "first argument of a method should be named 'self'"
 
-    def visit_functiondef(self, node, parents: Iterable, ignored: NameSet):
+    def visit_functiondef(self, node, parents: Sequence, ignored: NameSet):
         args = node.args.posonlyargs + node.args.args + node.args.kwonlyargs
 
         # Start by applying checks that are specific to the first argument.
@@ -395,7 +395,7 @@ class ImportAsCheck(BaseASTCheck):
     N814 = "camelcase '{name}' imported as constant '{asname}'"
     N817 = "camelcase '{name}' imported as acronym '{asname}'"
 
-    def visit_importfrom(self, node, parents: Iterable, ignored: NameSet):
+    def visit_importfrom(self, node, parents: Sequence, ignored: NameSet):
         for name in node.names:
             asname = name.asname
             if not asname:
@@ -427,7 +427,7 @@ class VariablesCheck(BaseASTCheck):
     N815 = "variable '{name}' in class scope should not be mixedCase"
     N816 = "variable '{name}' in global scope should not be mixedCase"
 
-    def _find_errors(self, assignment_target, parents: Iterable, ignored: NameSet):
+    def _find_errors(self, assignment_target, parents: Sequence, ignored: NameSet):
         for parent_func in reversed(parents):
             if isinstance(parent_func, ast.ClassDef):
                 checker = self.class_variable_check
@@ -455,36 +455,36 @@ class VariablesCheck(BaseASTCheck):
                     return True
         return False
 
-    def visit_assign(self, node, parents: Iterable, ignored: NameSet):
+    def visit_assign(self, node, parents: Sequence, ignored: NameSet):
         if self.is_namedtupe(node.value):
             return
         for target in node.targets:
             yield from self._find_errors(target, parents, ignored)
 
-    def visit_namedexpr(self, node, parents: Iterable, ignored: NameSet):
+    def visit_namedexpr(self, node, parents: Sequence, ignored: NameSet):
         if self.is_namedtupe(node.value):
             return
         yield from self._find_errors(node.target, parents, ignored)
 
     visit_annassign = visit_namedexpr
 
-    def visit_with(self, node, parents: Iterable, ignored: NameSet):
+    def visit_with(self, node, parents: Sequence, ignored: NameSet):
         for item in node.items:
             yield from self._find_errors(
                     item.optional_vars, parents, ignored)
 
     visit_asyncwith = visit_with
 
-    def visit_for(self, node, parents: Iterable, ignored: NameSet):
+    def visit_for(self, node, parents: Sequence, ignored: NameSet):
         yield from self._find_errors(node.target, parents, ignored)
 
     visit_asyncfor = visit_for
 
-    def visit_excepthandler(self, node, parents: Iterable, ignored: NameSet):
+    def visit_excepthandler(self, node, parents: Sequence, ignored: NameSet):
         if node.name:
             yield from self._find_errors(node, parents, ignored)
 
-    def visit_generatorexp(self, node, parents: Iterable, ignored: NameSet):
+    def visit_generatorexp(self, node, parents: Sequence, ignored: NameSet):
         for gen in node.generators:
             yield from self._find_errors(gen.target, parents, ignored)
 
@@ -513,7 +513,7 @@ class TypeVarNameCheck(BaseASTCheck):
     N808 = "type variable name '{name}' should use CapWords convention " \
            "and an optional '_co' or '_contra' suffix"
 
-    def visit_module(self, node, parents: Iterable, ignored: NameSet):
+    def visit_module(self, node, parents: Sequence, ignored: NameSet):
         for body in node.body:
             try:
                 if len(body.targets) != 1:
