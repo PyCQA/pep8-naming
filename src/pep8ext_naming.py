@@ -1,8 +1,9 @@
 """Checker of PEP-8 Naming Conventions."""
 import ast
+import enum
 from ast import iter_child_nodes
 from collections import deque
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable, Iterator, Sequence
 from fnmatch import fnmatchcase
 from functools import partial
 from itertools import chain
@@ -69,7 +70,8 @@ class NameSet(frozenset[str]):
         return super().__contains__(item)
 
 
-class _FunctionType:
+@enum.unique
+class FunctionType(enum.Enum):
     CLASSMETHOD = 'classmethod'
     STATICMETHOD = 'staticmethod'
     FUNCTION = 'function'
@@ -94,11 +96,11 @@ _default_staticmethod_decorators = ['staticmethod']
 
 
 def _build_decorator_to_type(classmethod_decorators, staticmethod_decorators):
-    decorator_to_type = {}
+    decorator_to_type: dict[str, FunctionType] = {}
     for decorator in classmethod_decorators:
-        decorator_to_type[decorator] = _FunctionType.CLASSMETHOD
+        decorator_to_type[decorator] = FunctionType.CLASSMETHOD
     for decorator in staticmethod_decorators:
-        decorator_to_type[decorator] = _FunctionType.STATICMETHOD
+        decorator_to_type[decorator] = FunctionType.STATICMETHOD
     return decorator_to_type
 
 
@@ -188,7 +190,7 @@ class NamingChecker:
         """Tag functions if they are methods, classmethods, staticmethods"""
         # tries to find all 'old style decorators' like
         # m = staticmethod(m)
-        late_decoration = {}
+        late_decoration: dict[str, FunctionType] = {}
         for node in iter_child_nodes(cls_node):
             if not (isinstance(node, ast.Assign) and
                     isinstance(node.value, ast.Call) and
@@ -213,7 +215,12 @@ class NamingChecker:
         self.set_function_nodes_types(
             iter_child_nodes(cls_node), ismetaclass, late_decoration)
 
-    def set_function_nodes_types(self, nodes, ismetaclass, late_decoration):
+    def set_function_nodes_types(
+        self,
+        nodes: Iterator[ast.AST],
+        ismetaclass: bool,
+        late_decoration: dict[str, FunctionType],
+    ):
         # iterate over all functions and tag them
         for node in nodes:
             if type(node) in METHOD_CONTAINER_NODES:
@@ -221,16 +228,18 @@ class NamingChecker:
                     iter_child_nodes(node), ismetaclass, late_decoration)
             if not isinstance(node, FUNC_NODES):
                 continue
-            node.function_type = _FunctionType.METHOD
+            setattr(node, 'function_type', FunctionType.METHOD)
             if node.name in CLASS_METHODS or ismetaclass:
-                node.function_type = _FunctionType.CLASSMETHOD
+                setattr(node, 'function_type', FunctionType.CLASSMETHOD)
             if node.name in late_decoration:
-                node.function_type = late_decoration[node.name]
+                setattr(node, 'function_type', late_decoration[node.name])
             elif node.decorator_list:
                 for d in node.decorator_list:
                     name = self.find_decorator_name(d)
-                    if name in self.decorator_to_type:
-                        node.function_type = self.decorator_to_type[name]
+                    if name is None:
+                        continue
+                    if function_type := self.decorator_to_type.get(name):
+                        setattr(node, 'function_type', function_type)
                         break
 
     @classmethod
@@ -320,18 +329,18 @@ class FunctionNameCheck(BaseASTCheck):
         return False
 
     def visit_functiondef(self, node, parents: Sequence, ignored: NameSet):
-        function_type = getattr(node, 'function_type', _FunctionType.FUNCTION)
+        function_type = getattr(node, 'function_type', FunctionType.FUNCTION)
         name = node.name
         if name in ignored:
             return
         if name in ('__dir__', '__getattr__'):
             return
-        if (function_type != _FunctionType.FUNCTION
+        if (function_type != FunctionType.FUNCTION
                 and self.has_override_decorator(node)):
             return
         if name.lower() != name:
             yield self.err(node, 'N802', name=name)
-        if (function_type == _FunctionType.FUNCTION
+        if (function_type == FunctionType.FUNCTION
                 and name[:2] == '__' and name[-2:] == '__'):
             yield self.err(node, 'N807', name=name)
 
@@ -363,9 +372,9 @@ class FunctionArgNamesCheck(BaseASTCheck):
         #       for backwards compatibility.
         if args and (name := args[0].arg) and name not in ignored:
             function_type = getattr(node, 'function_type', None)
-            if function_type == _FunctionType.METHOD and name != 'self':
+            if function_type == FunctionType.METHOD and name != 'self':
                 yield self.err(args[0], 'N805')
-            elif function_type == _FunctionType.CLASSMETHOD and name != 'cls':
+            elif function_type == FunctionType.CLASSMETHOD and name != 'cls':
                 yield self.err(args[0], 'N804')
 
         # Also add the special *arg and **kwarg arguments for the rest of the
