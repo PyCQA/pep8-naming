@@ -1,6 +1,13 @@
 Changes
 =======
 
+0.15.0 - 2025-04-29
+-------------------
+
+* Add support for Python 3.13.
+* Drop support for Python 3.8.
+* N808 checks type variable names use the CapWords convention and have an appropriate suffix.
+
 0.14.1 - 2024-05-17
 -------------------
 
