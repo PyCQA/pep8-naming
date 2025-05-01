@@ -540,7 +540,7 @@ class TypeVarNameCheck(BaseASTCheck):
             if not args or args[0] != name:
                 yield self.err(body, 'N808', name=name)
 
-            stripped_name = name.lstrip('_')
+            stripped_name = name.removeprefix('_')
             if not stripped_name[:1].isupper():
                 yield self.err(body, 'N808', name=name)
 

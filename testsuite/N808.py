@@ -43,7 +43,10 @@ Ok_contra = TypeVar("Ok_contra")
 Good = TypeVar("Good")
 
 #: Okay
-__Good = TypeVar("__Good")
+_Good = TypeVar("_Good")
+
+#: N808
+__NotGood = TypeVar("__NotGood")
 
 #: N808
 __NotGood__ = TypeVar("__NotGood__")
