@@ -524,29 +524,40 @@ class TypeVarNameCheck(BaseASTCheck):
 
     def visit_module(self, node, parents: Sequence, ignored: NameSet):
         for body in node.body:
-            try:
-                if len(body.targets) != 1:
-                    continue
-                name = body.targets[0].id
-                func_name = body.value.func.id
-                args = [a.value for a in body.value.args]
-                keywords = {kw.arg: kw.value.value for kw in body.value.keywords}
-            except AttributeError:
+            # Name = TypeVar('Name', ...)
+            if (
+                not isinstance(body, ast.Assign)
+                or len(body.targets) != 1
+                or not isinstance(body.targets[0], ast.Name)
+                or not isinstance(body.value, ast.Call)
+                or not isinstance(body.value.func, ast.Name)
+                or body.value.func.id != "TypeVar"
+            ):
                 continue
 
-            if func_name != "TypeVar" or name in ignored:
+            name = body.targets[0].id
+            if name in ignored:
                 continue
 
-            if not args or args[0] != name:
+            arg0 = body.value.args[0] if body.value.args else None
+            if not isinstance(arg0, ast.Constant) or arg0.value != name:
                 yield self.err(body, 'N808', name=name)
+                continue
 
-            stripped_name = name.removeprefix('_')
-            if not stripped_name[:1].isupper():
+            trimmed_name = name.removeprefix('_')
+            if not trimmed_name[:1].isupper():
                 yield self.err(body, 'N808', name=name)
+                continue
 
-            parts = stripped_name.split('_')
+            parts = trimmed_name.split('_')
             if len(parts) > 2:
                 yield self.err(body, 'N808', name=name)
+                continue
+
+            keywords = {
+                kw.arg: kw.value.value for kw in body.value.keywords
+                if kw.arg and isinstance(kw.value, ast.Constant)
+            }
 
             suffix = parts[-1] if len(parts) > 1 else ''
             if suffix and suffix != 'co' and suffix != 'contra':
