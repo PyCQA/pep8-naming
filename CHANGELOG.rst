@@ -1,6 +1,11 @@
 Changes
 =======
 
+0.15.1 - 2025-05-05
+-------------------
+
+* N808 now allows type variable names to start with an underscore.
+
 0.15.0 - 2025-04-29
 -------------------
 
