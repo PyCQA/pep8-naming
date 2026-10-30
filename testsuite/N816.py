@@ -57,3 +57,12 @@ async for γΓ1 in iterator:
 lambda f: (TheName := namedtuple('TheName', 'a b c')), TheName
 #: N816:1:15:
 lambda line: (BaD_WaLRuS := re.match(pattern, line)) and BaD_WaLRuS.group(1)
+
+#: Okay
+(someVar1 == 8 for someVar1 in [])
+#: Okay
+[someVar2 == 8 for someVar2 in []]
+#: Okay
+{someVar3 == 8 for someVar3 in []}
+#: Okay
+{someVar4: 8 for someVar4 in []}
