@@ -436,7 +436,8 @@ class VariablesCheck(BaseASTCheck):
     N815 = "variable '{name}' in class scope should not be mixedCase"
     N816 = "variable '{name}' in global scope should not be mixedCase"
 
-    def _find_errors(self, assignment_target, parents: Sequence, ignored: NameSet):
+    def _find_errors(
+            self, assignment_target, parents: Sequence, ignored: NameSet):
         for parent_func in reversed(parents):
             if isinstance(parent_func, ast.ClassDef):
                 checker = self.class_variable_check
