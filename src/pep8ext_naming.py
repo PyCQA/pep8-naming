@@ -495,6 +495,13 @@ class VariablesCheck(BaseASTCheck):
             yield from self._find_errors(node, parents, ignored)
 
     def visit_generatorexp(self, node, parents: Sequence, ignored: NameSet):
+        for parent_func in reversed(parents):
+            if isinstance(parent_func, ast.ClassDef):
+                return
+            if isinstance(parent_func, FUNC_NODES):
+                break
+        else:
+            return
         for gen in node.generators:
             yield from self._find_errors(gen.target, parents, ignored)
 

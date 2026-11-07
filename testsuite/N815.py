@@ -28,3 +28,10 @@ class C:
 #: N815(--ignore-names=*case)
 class C:
     mixed_Case = 0
+
+#: Okay
+class C:
+    a = (someVar1 == 8 for someVar1 in [])
+    b = [someVar2 == 8 for someVar2 in []]
+    c = {someVar3 == 8 for someVar3 in []}
+    d = {someVar4: 8 for someVar4 in []}
