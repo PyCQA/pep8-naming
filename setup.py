@@ -44,7 +44,7 @@ setup(
     py_modules=['pep8ext_naming'],
     install_requires=['flake8>=5.0.0'],
     zip_safe=False,
-    python_requires='>=3.9',
+    python_requires='>=3.10',
     entry_points={
         'flake8.extension': [
             'N8 = pep8ext_naming:NamingChecker',
@@ -59,11 +59,12 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: 3.11',
         'Programming Language :: Python :: 3.12',
         'Programming Language :: Python :: 3.13',
+        'Programming Language :: Python :: 3.14',
+        'Programming Language :: Python :: 3.15',
         'Programming Language :: Python :: 3 :: Only',
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: Software Development :: Quality Assurance',
