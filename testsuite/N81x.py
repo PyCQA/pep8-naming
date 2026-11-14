@@ -28,3 +28,19 @@ import GOOD as Γ
 from mod import GOOD as Γ
 #: Okay
 from mod import GOOD as Γ1
+#: Okay
+from mod import F as Field
+#: Okay
+from mod import _F as _Field
+#: Okay
+from mod import Γ as Γγ
+#: Okay
+from mod import F as FIELD
+#: N811:1:1
+from mod import F as field
+#: N811:1:1
+from mod import F as myField
+#: N811:1:1
+from mod import F as Field_Name
+#: N811:1:1
+from mod import GOOD as Bad

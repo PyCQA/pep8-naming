@@ -412,7 +412,9 @@ class ImportAsCheck(BaseASTCheck):
             original_name = name.name
             err_kwargs = {'name': original_name, 'asname': asname}
             if original_name.isupper():
-                if not asname.isupper():
+                if not asname.isupper() and not (
+                    len(original_name.strip('_')) == 1 and is_capwords(asname)
+                ):
                     yield self.err(node, 'N811', **err_kwargs)
             elif original_name.islower():
                 if asname.lower() != asname:
@@ -592,6 +594,11 @@ def _extract_names(assignment_target):
                 yield from _extract_names(element.value)
     elif target_type is ast.ExceptHandler:
         yield assignment_target.name
+
+
+def is_capwords(name):
+    name = name.strip('_')
+    return name[:1].isupper() and '_' not in name
 
 
 def is_mixed_case(name):
