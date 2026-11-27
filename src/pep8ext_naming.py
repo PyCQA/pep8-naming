@@ -277,7 +277,7 @@ class ClassNameCheck(BaseASTCheck):
     @classmethod
     def get_classdef(cls, name, parents: Sequence):
         for parent in parents:
-            for node in parent.body:
+            for node in _get_scope_statements(parent):
                 if isinstance(node, ast.ClassDef) and node.name == name:
                     return node
 
@@ -574,6 +574,18 @@ class TypeVarNameCheck(BaseASTCheck):
                 yield self.err(body, 'N808', name=name)
             elif keywords.get('contravariant') and suffix != 'contra':
                 yield self.err(body, 'N808', name=name)
+
+
+def _get_scope_statements(node):
+    """Yield the statements directly contained in a compound statement.
+
+    ``ast.Match`` is the only compound statement without a ``body``
+    attribute: its statements live in the ``body`` of each case.
+    """
+    if isinstance(node, ast.Match):
+        yield from chain.from_iterable(case.body for case in node.cases)
+        return
+    yield from getattr(node, 'body', ())
 
 
 def _extract_names(assignment_target):

@@ -5,6 +5,8 @@ Changes
 -------------------
 * Add support for Python 3.14 and 3.15.
 * Drop support for Python 3.9.
+* Fix ``AttributeError: 'Match' object has no attribute 'body'`` raised when a
+  class is defined inside a ``match`` statement.
 
 0.15.1 - 2025-05-05
 -------------------
