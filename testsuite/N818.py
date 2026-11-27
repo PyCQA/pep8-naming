@@ -32,3 +32,27 @@ class MixinActionClass(Mixin, MixinError):
 from decimal import Decimal
 class Decimal(Decimal):
     pass
+
+#: N818
+match 1:
+    case 1:
+        class ActionClass(Exception):
+            pass
+#: Okay
+match 1:
+    case 1:
+        class ActionError(Exception):
+            pass
+#: N818
+match 1:
+    case 1:
+        class ActionError(Exception):
+            pass
+        class DeepActionClass(ActionError):
+            pass
+#: N818
+def f():
+    match 1:
+        case 1:
+            class ActionClass(Exception):
+                pass
